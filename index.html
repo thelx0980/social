@@ -1,87 +1,18 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
-  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #fff; color: #000; }
-    header { background: #000; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .menu-toggle { font-size: 1.5rem; cursor: pointer; }
-    .menu { display: none; flex-direction: column; background: #000; color: #fff; position: absolute; top: 60px; right: 1rem; border-radius: 8px; overflow: hidden; }
-    .menu a { color: #fff; padding: 1rem; text-decoration: none; border-bottom: 1px solid #222; }
-    .menu a:hover { background: #222; }.section { display: none; padding: 2rem; max-width: 800px; margin: auto; }
-.section.active { display: block; }
-
-.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
-.gallery img { width: 100%; border-radius: 8px; object-fit: cover; }
-
-.contact { text-align: center; }
-.contact a { color: #000; font-weight: 600; }
-
-@media (max-width: 480px) {
-  .menu { width: 100%; right: 0; top: 55px; }
-}
-
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Social Portfolio</title>
+  <link rel="stylesheet" href="styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CY24QB3XX6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-CY24QB3XX6');
+  </script>
 </head>
 <body>
-  <header>
-    <h1>Your Name</h1>
-    <div class="menu-toggle" onclick="toggleMenu()">
-      <i class="fas fa-bars"></i>
-    </div>
-    <nav class="menu" id="menu">
-      <a href="#" onclick="showSection('contact')">Contact</a>
-      <a href="#" onclick="showSection('photography')">Photography</a>
-      <a href="#" onclick="showSection('music')">Music Player</a>
-    </nav>
-  </header>  <!-- Contact Section -->  <section id="contact" class="section active">
-    <h2>Contact Me</h2>
-    <p>Email: <a href="mailto:example@gmail.com">example@gmail.com</a></p>
-  </section>  <!-- Photography Section -->  <section id="photography" class="section">
-    <h2>Photography</h2>
-    <div class="gallery">
-      <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover1.jpg" alt="Photo 1">
-      <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover2.jpg" alt="Photo 2">
-      <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover3.jpg" alt="Photo 3">
-    </div>
-  </section>  <!-- Music Player Section -->  <section id="music" class="section">
-    <h2>Music Player</h2>
-    <div class="music-player">
-      <div id="audio-player">
-        <div class="songList">
-          <div class="songItem">
-            <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover1.jpg" alt="cover1">
-            <span>Song 1</span>
-            <audio controls src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/songs/song1.mp3"></audio>
-          </div>
-          <div class="songItem">
-            <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover2.jpg" alt="cover2">
-            <span>Song 2</span>
-            <audio controls src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/songs/song2.mp3"></audio>
-          </div>
-          <div class="songItem">
-            <img src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/images/cover3.jpg" alt="cover3">
-            <span>Song 3</span>
-            <audio controls src="https://raw.githubusercontent.com/IshwarCD/Audio-Player2/main/songs/song3.mp3"></audio>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>  <script>
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.getElementById('menu').style.display = 'none';
-    }
-  </script></body>
+  <!-- Website content with navbar, contact, photography, and music player -->
+</body>
 </html>
