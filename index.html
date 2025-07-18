@@ -1,93 +1,102 @@
-<!DOCTYPE html><!--
-  🚀 3 Modern "Link-in-Bio" Templates
-  Choose one: copy its `<html>...</html>` block to index.html and customize.
---><!-- ======================
-     Option A: Light Card Style
-====================== --><html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Links</title>
+  <title>Your Name | Links & Portfolio</title>
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
   <style>
-    body { margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#eef2f5; font-family:'Inter',sans-serif; }
-    .card { background:#fff; padding:2rem; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:90%; max-width:360px; text-align:center; }
-    img.avatar { width:100px; height:100px; border-radius:50%; margin-bottom:1rem; }
-    h1 { margin:0.5rem 0; font-size:1.5rem; }
-    p.subtitle { color:#666; margin-bottom:1.5rem; }
-    .links a { display:block; margin:0.5rem 0; padding:0.75rem; border-radius:8px; text-decoration:none; background:#0073e6; color:#fff; transition:background 0.2s; }
-    .links a:hover { background:#005bb5; }
+    /* Reset & Base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+    body { background: #fff; color: #000; display: flex; justify-content: center; padding: 2rem; }
+    a { text-decoration: none; color: inherit; }/* Container */
+.container { max-width: 600px; width: 100%; }
+.section { margin-bottom: 2.5rem; }
+h1, h2 { text-align: center; font-weight: 600; }
+h1 { margin-bottom: 0.5rem; font-size: 2rem; }
+h2 { margin-bottom: 1rem; font-size: 1.25rem; }
+
+/* Links List */
+.links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.links a { flex: 1 1 45%; background: #000; color: #fff; padding: 0.75rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.links a:hover { background: #333; }
+
+/* Photo Gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
+.gallery img { width: 100%; border-radius: 8px; object-fit: cover; }
+
+/* Contact */
+.contact { text-align: center; }
+.contact a { color: #000; font-weight: 600; }
+
+/* Music Player */
+.music { text-align: center; }
+audio { width: 100%; margin-top: 0.5rem; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  h1 { font-size: 1.75rem; }
+  .links a { flex: 1 1 100%; }
+}
+
   </style>
 </head>
 <body>
-  <div class="card">
-    <img class="avatar" src="avatar.jpg" alt="Your Name" />
-    <h1>Your Name</h1>
-    <p class="subtitle">Role • Tagline</p>
-    <div class="links">
-      <a href="#">GitHub</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Twitter</a>
-      <a href="#">Email</a>
-    </div>
+  <div class="container"><!-- Header -->
+<div class="section">
+  <h1>Your Name</h1>
+  <p style="text-align:center; color:#555;">Web Developer & Photographer</p>
+</div>
+
+<!-- Links -->
+<div class="section">
+  <h2>Connect with Me</h2>
+  <div class="links">
+    <a href="https://github.com/Username" target="_blank"><i class="fab fa-github" style="margin-right:0.5rem;"></i> GitHub</a>
+    <a href="https://instagram.com/Username" target="_blank"><i class="fab fa-instagram" style="margin-right:0.5rem;"></i> Instagram</a>
+    <a href="https://facebook.com/Username" target="_blank"><i class="fab fa-facebook" style="margin-right:0.5rem;"></i> Facebook</a>
+    <a href="https://youtube.com/Username" target="_blank"><i class="fab fa-youtube" style="margin-right:0.5rem;"></i> YouTube</a>
+    <a href="https://t.me/Username" target="_blank"><i class="fab fa-telegram" style="margin-right:0.5rem;"></i> Telegram</a>
+  </div>
+</div>
+
+<!-- Photography Gallery -->
+<div class="section">
+  <h2>Photography</h2>
+  <div class="gallery">
+    <img src="photo1.jpg" alt="Photo 1">
+    <img src="photo2.jpg" alt="Photo 2">
+    <img src="photo3.jpg" alt="Photo 3">
+    <img src="photo4.jpg" alt="Photo 4">
+  </div>
+  <p style="text-align:center; font-size:0.9rem; color:#777; margin-top:0.5rem;">(Replace with your own images)</p>
+</div>
+
+<!-- Contact -->
+<div class="section contact">
+  <h2>Contact Me</h2>
+  <p>Email: <a href="mailto:example@gmail.com">example@gmail.com</a></p>
+</div>
+
+<!-- Music Player -->
+<div class="section music">
+  <h2>Listen to My Mix</h2>
+  <audio controls>
+    <source src="your-track.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
+
   </div>
 </body>
-</html><!-- ======================
-     Option B: Dark Neon Theme
-====================== --><html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Links</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    body { margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#0e0e0e; font-family:'Roboto',sans-serif; }
-    .container { text-align:center; }
-    h1 { color:#0ff; text-shadow:0 0 8px #0ff; font-size:2rem; }
-    .links a { display:inline-block; margin:0.5rem; padding:0.75rem 1.5rem; color:#fff; text-decoration:none; border:2px solid #0ff; border-radius:50px; transition:background 0.2s, color 0.2s; }
-    .links a:hover { background:#0ff; color:#000; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Your Name</h1>
-    <div class="links">
-      <a href="#">GitHub</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Instagram</a>
-      <a href="#">Portfolio</a>
-    </div>
-  </div>
-</body>
-</html><!-- ======================
-     Option C: Gradient & Blur Background
-====================== --><html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Links</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:'Poppins',sans-serif; }
-    .bg { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#ff758c,#ff7eb3); filter:blur(60px); z-index:-1; }
-    .wrap { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; padding:2rem; }
-    .wrap h1 { font-size:2.5rem; margin-bottom:0.5rem; }
-    .wrap .links a { display:inline-block; margin:0.75rem; padding:0.85rem 1.5rem; background:rgba(255,255,255,0.2); border-radius:50px; backdrop-filter:blur(10px); text-decoration:none; color:#fff; transition:transform 0.2s; }
-    .wrap .links a:hover { transform:scale(1.05); }
-  </style>
-</head>
-<body>
-  <div class="bg"></div>
-  <div class="wrap">
-    <h1>Your Name</h1>
-    <p>Developer • Creator • Explorer</p>
-    <div class="links">
-      <a href="#">GitHub</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Dribbble</a>
-      <a href="#">Email</a>
-    </div>
-  </div>
-</body>
-</html>
+</html><!--
+Instructions:
+1. Save as index.html
+2. Replace 'photoX.jpg' with your photography files
+3. Provide a real 'your-track.mp3' in the repo
+4. Update Font Awesome kit ID in the <script>
+5. Push to 'Username.github.io' and enable GitHub Pages
+-->
