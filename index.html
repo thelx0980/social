@@ -1,54 +1,93 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><!--
+  🚀 3 Modern "Link-in-Bio" Templates
+  Choose one: copy its `<html>...</html>` block to index.html and customize.
+--><!-- ======================
+     Option A: Light Card Style
+====================== --><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Name | Links</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #333; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .container { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 2rem; width: 100%; max-width: 400px; text-align: center; }
-    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; }
-    h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
-    p.subtitle { font-size: 1rem; color: #666; margin-bottom: 1.5rem; }
-    .links { list-style: none; }
-    .links li { margin-bottom: 1rem; }
-    .links a {
-      display: block;
-      text-decoration: none;
-      background: #0073e6;
-      color: #fff;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .links a:hover { background: #005bb5; }
-    .socials { margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; }
-    .socials a { color: #666; font-size: 1.25rem; transition: color 0.2s; }
-    .socials a:hover { color: #333; }
+    body { margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#eef2f5; font-family:'Inter',sans-serif; }
+    .card { background:#fff; padding:2rem; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:90%; max-width:360px; text-align:center; }
+    img.avatar { width:100px; height:100px; border-radius:50%; margin-bottom:1rem; }
+    h1 { margin:0.5rem 0; font-size:1.5rem; }
+    p.subtitle { color:#666; margin-bottom:1.5rem; }
+    .links a { display:block; margin:0.5rem 0; padding:0.75rem; border-radius:8px; text-decoration:none; background:#0073e6; color:#fff; transition:background 0.2s; }
+    .links a:hover { background:#005bb5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="avatar" src="avatar.jpg" alt="Your Name" />
+    <h1>Your Name</h1>
+    <p class="subtitle">Role • Tagline</p>
+    <div class="links">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter</a>
+      <a href="#">Email</a>
+    </div>
+  </div>
+</body>
+</html><!-- ======================
+     Option B: Dark Neon Theme
+====================== --><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name | Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body { margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#0e0e0e; font-family:'Roboto',sans-serif; }
+    .container { text-align:center; }
+    h1 { color:#0ff; text-shadow:0 0 8px #0ff; font-size:2rem; }
+    .links a { display:inline-block; margin:0.5rem; padding:0.75rem 1.5rem; color:#fff; text-decoration:none; border:2px solid #0ff; border-radius:50px; transition:background 0.2s, color 0.2s; }
+    .links a:hover { background:#0ff; color:#000; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Replace 'avatar.jpg' with your profile image in the repo root -->
-    <img src="avatar.jpg" alt="Your Name" class="avatar">
     <h1>Your Name</h1>
-    <p class="subtitle">Web Developer & Designer</p><ul class="links">
-  <li><a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
-  <li><a href="https://linkedin.com/in/yourusername" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
-  <li><a href="https://twitter.com/yourusername" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
-  <li><a href="mailto:youremail@example.com"><i class="fas fa-envelope"></i> Email</a></li>
-</ul>
-
-<div class="socials">
-  <a href="https://instagram.com/yourusername" target="_blank"><i class="fab fa-instagram"></i></a>
-  <a href="https://facebook.com/yourusername" target="_blank"><i class="fab fa-facebook"></i></a>
-  <a href="https://youtube.com/yourusername" target="_blank"><i class="fab fa-youtube"></i></a>
-</div>
-
+    <div class="links">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Instagram</a>
+      <a href="#">Portfolio</a>
+    </div>
   </div>
 </body>
-</html><!--
+</html><!-- ======================
+     Option C: Gradient & Blur Background
+====================== --><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name | Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Poppins',sans-serif; }
+    .bg { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#ff758c,#ff7eb3); filter:blur(60px); z-index:-1; }
+    .wrap { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; padding:2rem; }
+    .wrap h1 { font-size:2.5rem; margin-bottom:0.5rem; }
+    .wrap .links a { display:inline-block; margin:0.75rem; padding:0.85rem 1.5rem; background:rgba(255,255,255,0.2); border-radius:50px; backdrop-filter:blur(10px); text-decoration:none; color:#fff; transition:transform 0.2s; }
+    .wrap .links a:hover { transform:scale(1.05); }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="wrap">
+    <h1>Your Name</h1>
+    <p>Developer • Creator • Explorer</p>
+    <div class="links">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Dribbble</a>
+      <a href="#">Email</a>
+    </div>
+  </div>
+</body>
+</html>
