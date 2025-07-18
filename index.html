@@ -4,18 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Name | Links</title>
+
+  <!-- SEO Meta -->
+  <meta name="description" content="Your Name — Web Developer & Designer. Follow me on GitHub, LinkedIn, Twitter, Instagram, and more." />
+  <meta name="author" content="Your Name" />
+
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #333; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .container { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 2rem; width: 100%; max-width: 400px; text-align: center; }
-    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
     h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
-    p.subtitle { font-size: 1rem; color: #666; margin-bottom: 1.5rem; }
-    .links { list-style: none; }
+    p.subtitle {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    .links { list-style: none; padding: 0; }
     .links li { margin-bottom: 1rem; }
     .links a {
       display: block;
@@ -27,34 +61,66 @@
       transition: background 0.2s;
     }
     .links a:hover { background: #005bb5; }
-    .socials { margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; }
-    .socials a { color: #666; font-size: 1.25rem; transition: color 0.2s; }
+    .socials {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .socials a {
+      color: #666;
+      font-size: 1.25rem;
+      transition: color 0.2s;
+    }
     .socials a:hover { color: #333; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Replace 'avatar.jpg' with your profile image in the repo root -->
-    <img src="avatar.jpg" alt="Your Name" class="avatar">
+    <img src="avatar.jpg" alt="Your Name" class="avatar" />
     <h1>Your Name</h1>
     <p class="subtitle">Web Developer & Designer</p>
 
     <ul class="links">
-      <li><a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
-      <li><a href="https://linkedin.com/in/yourusername" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
-      <li><a href="https://twitter.com/yourusername" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
-      <li><a href="mailto:youremail@example.com"><i class="fas fa-envelope"></i> Email</a></li>
+      <li>
+        <a href="https://github.com/yourusername" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+      </li>
+      <li>
+        <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener">
+          <i class="fab fa-linkedin"></i> LinkedIn
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/yourusername" target="_blank" rel="noopener">
+          <i class="fab fa-twitter"></i> Twitter
+        </a>
+      </li>
+      <li>
+        <a href="mailto:youremail@example.com">
+          <i class="fas fa-envelope"></i> Email
+        </a>
+      </li>
     </ul>
 
     <div class="socials">
-      <a href="https://instagram.com/yourusername" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://facebook.com/yourusername" target="_blank"><i class="fab fa-facebook"></i></a>
-      <a href="https://youtube.com/yourusername" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://instagram.com/yourusername" target="_blank" rel="noopener">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://facebook.com/yourusername" target="_blank" rel="noopener">
+        <i class="fab fa-facebook"></i>
+      </a>
+      <a href="https://youtube.com/yourusername" target="_blank" rel="noopener">
+        <i class="fab fa-youtube"></i>
+      </a>
     </div>
   </div>
 
   <!-- Cloudflare Web Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c8d2841153234b6a81e2f12e52b5909b"}'></script>
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' 
+    data-cf-beacon='{"token": "c8d2841153234b6a81e2f12e52b5909b"}'>
+  </script>
   <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
