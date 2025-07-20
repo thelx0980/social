@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Portfolio</title>
+  <title>ishwar.0980 | Links</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
@@ -14,16 +14,16 @@
   <style>
     :root {
       --bg-light: #f0f2f5;
-      --container-light: #ffffff;
-      --text-light: #222;
+      --container-light: #fff;
+      --text-light: #333;
       --subtext-light: #666;
       --project-bg-light: #e3e9f5;
 
-      --bg-dark: #1a1a1a;
-      --container-dark: #2a2a2a;
-      --text-dark: #f0f0f0;
-      --subtext-dark: #999;
-      --project-bg-dark: #333a4a;
+      --bg-dark: #1e1e1e;
+      --container-dark: #2c2c2c;
+      --text-dark: #f9f9f9;
+      --subtext-dark: #bbb;
+      --project-bg-dark: #333945;
 
       --primary: #0073e6;
       --primary-dark: #005bb5;
@@ -45,31 +45,31 @@
       --project-bg: var(--project-bg-light);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 1rem;
       transition: background 0.3s, color 0.3s;
     }
 
-    .section {
+    .container {
       background: var(--container);
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin: 1rem auto;
-      max-width: 500px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 2rem;
+      width: 100%;
+      max-width: 500px;
       text-align: center;
+      transition: background 0.3s;
     }
 
-    /* Profile Section */
     .avatar {
       width: 120px;
       height: 120px;
@@ -78,57 +78,50 @@
       margin-bottom: 1rem;
     }
 
-    h1 {
-      font-size: 1.75rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .subtitle {
+    h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    p.subtitle {
       font-size: 1rem;
       color: var(--subtext);
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
-    /* Socials Section */
-    .socials-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.25rem;
-    }
+    .links, .projects { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+    .links li, .projects li { margin-bottom: 1rem; }
 
-    .social-block {
-      text-align: center;
-    }
-
-    .social-block i {
-      font-size: 1.5rem;
-      color: var(--primary);
-    }
-
-    .social-block .name {
-      font-weight: 600;
-      margin: 0.5rem 0 0.5rem 0;
-    }
-
-    .social-block a {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
+    .links a {
+      display: block;
       text-decoration: none;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
       transition: background 0.2s;
     }
 
-    .social-block a:hover {
+    .links a i { margin-right: 8px; }
+
+    .links a:hover {
       background: var(--primary-dark);
     }
 
-    /* Project Section */
+    .socials {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .projects-section {
+      text-align: left;
+      margin-top: 2rem;
+    }
+
     .projects-section h2 {
       font-size: 1.25rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       color: var(--primary);
+      text-align: center;
     }
 
     .project {
@@ -136,10 +129,10 @@
       border: 2px solid var(--primary);
       border-radius: 12px;
       padding: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
       display: flex;
+      align-items: flex-start;
       gap: 1rem;
-      text-align: left;
       transition: background 0.3s;
     }
 
@@ -169,6 +162,7 @@
       border-radius: 4px;
       font-size: 0.85rem;
       text-decoration: none;
+      transition: background 0.2s;
     }
 
     .project-content a:hover {
@@ -176,9 +170,9 @@
     }
 
     .toggle {
-      position: fixed;
-      top: 16px;
-      right: 16px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
     }
 
     .toggle input {
@@ -200,6 +194,7 @@
         align-items: center;
         text-align: center;
       }
+
       .project-icon {
         font-size: 1.8rem;
       }
@@ -207,76 +202,48 @@
   </style>
 </head>
 <body>
-
-  <!-- 🌙 Dark Mode Toggle -->
+  <!-- Dark Mode Toggle -->
   <div class="toggle">
     <input type="checkbox" id="darkToggle" />
     <label for="darkToggle">🌙 Dark Mode</label>
   </div>
 
-  <!-- 👤 Profile Section -->
-  <div class="section">
+  <div class="container">
     <img src="avatar.jpg" alt="Your Name" class="avatar" />
-    <h1>Your Name</h1>
-    <p class="subtitle">Web Developer & Designer</p>
-  </div>
+    <h1>Ishwar Lal</h1>
+    <p class="subtitle">Unknown</p>
 
-  <!-- 🔗 Social Media Links Section -->
-  <div class="section">
-    <h2>Connect with Me</h2>
-    <div class="socials-grid">
-      <div class="social-block">
-        <i class="fab fa-github"></i>
-        <div class="name">GitHub</div>
-        <a href="https://github.com/yourusername" target="_blank">Visit</a>
-      </div>
-      <div class="social-block">
-        <i class="fab fa-twitter"></i>
-        <div class="name">Twitter</div>
-        <a href="https://twitter.com/yourusername" target="_blank">Visit</a>
-      </div>
-      <div class="social-block">
-        <i class="fab fa-telegram"></i>
-        <div class="name">Telegram</div>
-        <a href="https://t.me/yourusername" target="_blank">Visit</a>
-      </div>
-      <div class="social-block">
-        <i class="fab fa-youtube"></i>
-        <div class="name">YouTube</div>
-        <a href="https://youtube.com/yourusername" target="_blank">Visit</a>
-      </div>
-      <div class="social-block">
-        <i class="fab fa-facebook"></i>
-        <div class="name">Facebook</div>
-        <a href="https://facebook.com/yourusername" target="_blank">Visit</a>
-      </div>
-      <div class="social-block">
-        <i class="fas fa-envelope"></i>
-        <div class="name">Email</div>
-        <a href="mailto:youremail@example.com">Visit</a>
-      </div>
-    </div>
-  </div>
+    <ul class="links">
+      <li><a href="https://github.com/0AiB" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
+      <li><a href="https://t.me/thelx0980" target="_blank"><i class="fab fa-telegram"></i> Telegram</a></li>
+      <li><a href="https://facebook.com/ishwar.0980" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+      <li><a href="mailto: xprotullen@gmail.com"><i class="fas fa-envelope"></i> Email</a></li>
+    </ul>
 
-  <!-- 🧠 Projects Section -->
-  <div class="section projects-section">
-    <h2>My Projects</h2>
+    <!-- Projects Section -->
+    <div class="projects-section">
+      <h2>My Projects</h2>
 
-    <div class="project">
-      <div class="project-icon"><i class="fas fa-robot"></i></div>
-      <div class="project-content">
-        <h3>Wroxen</h3>
-        <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
-        <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
+      <div class="project">
+        <div class="project-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="project-content">
+          <h3>Wroxen</h3>
+          <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
+          <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
+        </div>
       </div>
-    </div>
 
-    <div class="project">
-      <div class="project-icon"><i class="fas fa-paper-plane"></i></div>
-      <div class="project-content">
-        <h3>CNL-Auto-Post-Bot</h3>
-        <p>CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
-        <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
+      <div class="project">
+        <div class="project-icon">
+          <i class="fas fa-paper-plane"></i>
+        </div>
+        <div class="project-content">
+          <h3>CNL-Auto-Post-Bot</h3>
+          <p>CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
+          <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
+        </div>
       </div>
     </div>
   </div>
@@ -286,7 +253,11 @@
     const html = document.documentElement;
 
     toggle.addEventListener('change', () => {
-      html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
+      if (toggle.checked) {
+        html.setAttribute('data-theme', 'dark');
+      } else {
+        html.setAttribute('data-theme', 'light');
+      }
     });
   </script>
 </body>
