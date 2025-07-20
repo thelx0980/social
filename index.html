@@ -33,7 +33,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 2rem;
       width: 100%;
-      max-width: 400px;
+      max-width: 480px;
       text-align: center;
     }
     .avatar {
@@ -49,9 +49,10 @@
       color: #666;
       margin-bottom: 1.5rem;
     }
-    .links { list-style: none; padding: 0; }
-    .links li { margin-bottom: 1rem; }
-    .links a {
+    .links, .projects { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+    .links li, .projects li { margin-bottom: 1rem; }
+
+    .links a, .projects a {
       display: block;
       text-decoration: none;
       background: #0073e6;
@@ -60,7 +61,8 @@
       border-radius: 6px;
       transition: background 0.2s;
     }
-    .links a:hover { background: #005bb5; }
+    .links a:hover, .projects a:hover { background: #005bb5; }
+
     .socials {
       margin-top: 1.5rem;
       display: flex;
@@ -73,6 +75,41 @@
       transition: color 0.2s;
     }
     .socials a:hover { color: #333; }
+
+    .projects-section {
+      text-align: left;
+      margin-top: 2rem;
+    }
+    .projects-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #0073e6;
+    }
+    .project {
+      background: #f7f9fc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .project h3 {
+      margin-bottom: 0.25rem;
+      font-size: 1.1rem;
+      color: #0073e6;
+    }
+    .project p {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+    .project a {
+      color: #0073e6;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .project a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -82,45 +119,34 @@
     <p class="subtitle">Web Developer & Designer</p>
 
     <ul class="links">
-      <li>
-        <a href="https://github.com/yourusername" target="_blank" rel="noopener">
-          <i class="fab fa-github"></i> GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener">
-          <i class="fab fa-linkedin"></i> LinkedIn
-        </a>
-      </li>
-      <li>
-        <a href="https://twitter.com/yourusername" target="_blank" rel="noopener">
-          <i class="fab fa-twitter"></i> Twitter
-        </a>
-      </li>
-      <li>
-        <a href="mailto:youremail@example.com">
-          <i class="fas fa-envelope"></i> Email
-        </a>
-      </li>
+      <li><a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
+      <li><a href="https://linkedin.com/in/yourusername" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+      <li><a href="https://twitter.com/yourusername" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
+      <li><a href="mailto:youremail@example.com"><i class="fas fa-envelope"></i> Email</a></li>
     </ul>
 
     <div class="socials">
-      <a href="https://instagram.com/yourusername" target="_blank" rel="noopener">
-        <i class="fab fa-instagram"></i>
-      </a>
-      <a href="https://facebook.com/yourusername" target="_blank" rel="noopener">
-        <i class="fab fa-facebook"></i>
-      </a>
-      <a href="https://youtube.com/yourusername" target="_blank" rel="noopener">
-        <i class="fab fa-youtube"></i>
-      </a>
+      <a href="https://instagram.com/yourusername" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://facebook.com/yourusername" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://youtube.com/yourusername" target="_blank"><i class="fab fa-youtube"></i></a>
+    </div>
+
+    <!-- My Projects Section -->
+    <div class="projects-section">
+      <h2>My Projects</h2>
+
+      <div class="project">
+        <h3>Wroxen</h3>
+        <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
+        <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
+      </div>
+
+      <div class="project">
+        <h3>CNL-Auto-Post-Bot</h3>
+        <p>CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
+        <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
+      </div>
     </div>
   </div>
-
-  <!-- Cloudflare Web Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' 
-    data-cf-beacon='{"token": "c8d2841153234b6a81e2f12e52b5909b"}'>
-  </script>
-  <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
