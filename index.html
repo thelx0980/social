@@ -217,7 +217,7 @@
       <li><a href="https://github.com/0AiB" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
       <li><a href="https://t.me/thelx0980" target="_blank"><i class="fab fa-telegram"></i> Telegram</a></li>
       <li><a href="https://facebook.com/ishwar.0980" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
-      <li><a href="mailto: xprotullen@gmail.com"><i class="fas fa-envelope"></i> Email</a></li>
+      <li><a href="mailto: example@gmail.com"><i class="fas fa-envelope"></i> Email</a></li>
     </ul>
 
     <!-- Projects Section -->
@@ -246,18 +246,23 @@
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Comment Section -->
+    <div class="commentbox" style="margin-top: 2rem;"></div>
+  </div> <!-- End of container -->
+
+  <!-- CommentBox.io Script -->
+  <script src="https://unpkg.com/commentbox.io/dist/commentBox.min.js"></script>
+  <script>
+    commentBox('5742256745086976-proj');
+  </script>
 
   <script>
     const toggle = document.getElementById('darkToggle');
     const html = document.documentElement;
 
     toggle.addEventListener('change', () => {
-      if (toggle.checked) {
-        html.setAttribute('data-theme', 'dark');
-      } else {
-        html.setAttribute('data-theme', 'light');
-      }
+      html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
     });
   </script>
 </body>
