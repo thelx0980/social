@@ -1,268 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ishwar.0980 | Links</title>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Portfolio</title>
   <style>
-    :root {
-      --bg-light: #f0f2f5;
-      --container-light: #fff;
-      --text-light: #333;
-      --subtext-light: #666;
-      --project-bg-light: #e3e9f5;
-
-      --bg-dark: #1e1e1e;
-      --container-dark: #2c2c2c;
-      --text-dark: #f9f9f9;
-      --subtext-dark: #bbb;
-      --project-bg-dark: #333945;
-
-      --primary: #0073e6;
-      --primary-dark: #005bb5;
-    }
-
-    [data-theme="dark"] {
-      --bg: var(--bg-dark);
-      --container: var(--container-dark);
-      --text: var(--text-dark);
-      --subtext: var(--subtext-dark);
-      --project-bg: var(--project-bg-dark);
-    }
-
-    [data-theme="light"] {
-      --bg: var(--bg-light);
-      --container: var(--container-light);
-      --text: var(--text-light);
-      --subtext: var(--subtext-light);
-      --project-bg: var(--project-bg-light);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-      transition: background 0.3s, color 0.3s;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
     }
-
     .container {
-      background: var(--container);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 2rem;
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-      transition: background 0.3s;
+      max-width: 900px;
+      margin: auto;
     }
-
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 1rem;
-    }
-
-    h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
-    p.subtitle {
-      font-size: 1rem;
-      color: var(--subtext);
-      margin-bottom: 1.5rem;
-    }
-
-    .links, .projects { list-style: none; padding: 0; margin-bottom: 1.5rem; }
-    .links li, .projects li { margin-bottom: 1rem; }
-
-    .links a {
-      display: block;
-      text-decoration: none;
-      background: var(--primary);
-      color: #fff;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-
-    .links a i { margin-right: 8px; }
-
-    .links a:hover {
-      background: var(--primary-dark);
-    }
-
-    .socials {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-
-    .projects-section {
-      text-align: left;
-      margin-top: 2rem;
-    }
-
-    .projects-section h2 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      color: var(--primary);
-      text-align: center;
-    }
-
     .project {
-      background: var(--project-bg);
-      border: 2px solid var(--primary);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      transition: background 0.3s;
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
-
-    .project-icon {
-      font-size: 2rem;
-      color: var(--primary);
-      flex-shrink: 0;
-    }
-
-    .project-content h3 {
-      margin-bottom: 0.25rem;
-      font-size: 1.1rem;
-      color: var(--primary);
-    }
-
-    .project-content p {
-      font-size: 0.9rem;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-
-    .project-content a {
-      display: inline-block;
-      background: var(--primary);
-      color: #fff;
-      padding: 0.4rem 0.75rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-
-    .project-content a:hover {
-      background: var(--primary-dark);
-    }
-
-    .toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-
-    .toggle input {
-      display: none;
-    }
-
-    .toggle label {
-      cursor: pointer;
-      background: var(--primary);
-      color: #fff;
-      padding: 0.4rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 480px) {
-      .project {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-
-      .project-icon {
-        font-size: 1.8rem;
-      }
+    .comment-section {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <!-- Dark Mode Toggle -->
-  <div class="toggle">
-    <input type="checkbox" id="darkToggle" />
-    <label for="darkToggle">🌙 Dark Mode</label>
-  </div>
-
   <div class="container">
-    <img src="avatar.jpg" alt="Your Name" class="avatar" />
-    <h1>Ishwar Lal</h1>
-    <p class="subtitle">Unknown</p>
-
-    <ul class="links">
-      <li><a href="https://github.com/0AiB" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
-      <li><a href="https://t.me/thelx0980" target="_blank"><i class="fab fa-telegram"></i> Telegram</a></li>
-      <li><a href="https://facebook.com/ishwar.0980" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
-      <li><a href="mailto: example@gmail.com"><i class="fas fa-envelope"></i> Email</a></li>
-    </ul>
-
-    <!-- Projects Section -->
-    <div class="projects-section">
-      <h2>My Projects</h2>
-
-      <div class="project">
-        <div class="project-icon">
-          <i class="fas fa-robot"></i>
-        </div>
-        <div class="project-content">
-          <h3>Wroxen</h3>
-          <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
-          <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
-        </div>
-      </div>
-
-      <div class="project">
-        <div class="project-icon">
-          <i class="fas fa-paper-plane"></i>
-        </div>
-        <div class="project-content">
-          <h3>CNL-Auto-Post-Bot</h3>
-          <p>CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
-          <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
-        </div>
-      </div>
+    <!-- Project Section -->
+    <div class="project">
+      <h3>CNL-Auto-Post-Bot</h3>
+      <p>CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
+      <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
     </div>
 
     <!-- Comment Section -->
-    <div class="commentbox" style="margin-top: 2rem;"></div>
-  </div> <!-- End of container -->
+    <div class="comment-section" style="margin-top:2rem;">
+      <h2>Comments</h2>
+      <form id="comment-form">
+        <textarea id="comment-input" placeholder="Write your comment..." rows="3" style="width:100%;padding:10px;margin-bottom:10px;"></textarea>
+        <button type="submit" style="padding:10px 20px;background:#0073e6;color:white;border:none;border-radius:5px;">Post Comment</button>
+      </form>
+      <div id="comment-list" style="margin-top:20px;"></div>
+    </div>
+  </div>
 
-  <!-- CommentBox.io Script -->
-  <script src="https://unpkg.com/commentbox.io/dist/commentBox.min.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
   <script>
-    commentBox('5742256745086976-proj');
-  </script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJd-M5yL7y2dxvZVP8YXfGl3m1yN1m4qY",
+      authDomain: "ishwar0980-7525b.firebaseapp.com",
+      projectId: "ishwar0980-7525b",
+      storageBucket: "ishwar0980-7525b.appspot.com",
+      messagingSenderId: "491430627730",
+      appId: "1:491430627730:web:7e5743f5ad0dddf795562b"
+    };
 
-  <script>
-    const toggle = document.getElementById('darkToggle');
-    const html = document.documentElement;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    toggle.addEventListener('change', () => {
-      html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
+    const form = document.getElementById('comment-form');
+    const input = document.getElementById('comment-input');
+    const commentList = document.getElementById('comment-list');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      await db.collection('comments').add({
+        text,
+        created: new Date().toISOString()
+      });
+
+      input.value = '';
+    });
+
+    db.collection('comments').orderBy('created', 'desc').onSnapshot(snapshot => {
+      commentList.innerHTML = '';
+      snapshot.forEach(doc => {
+        const comment = doc.data();
+        const div = document.createElement('div');
+        div.style.padding = '10px';
+        div.style.marginBottom = '10px';
+        div.style.background = '#f0f2f5';
+        div.style.borderRadius = '6px';
+        div.textContent = comment.text;
+        commentList.appendChild(div);
+      });
     });
   </script>
 </body>
