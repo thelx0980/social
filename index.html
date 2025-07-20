@@ -1,72 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Anonymous Comment System</title>
+  <title>Firebase Anonymous Comments</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    #comments { margin-top: 2rem; }
-    .comment { background: #f2f2f2; padding: 1rem; border-radius: 5px; margin-bottom: 10px; }
-    textarea { width: 100%; padding: 1rem; font-size: 1rem; }
-    button { margin-top: 10px; padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+    body { font-family: Arial; padding: 2rem; }
+    .comment { background: #f1f1f1; padding: 10px; margin-top: 10px; border-radius: 5px; }
   </style>
 </head>
 <body>
 
-  <h2>💬 Leave a Comment</h2>
-  <textarea id="commentInput" placeholder="Type your comment here..."></textarea>
-  <br>
-  <button onclick="postComment()">Post Comment</button>
+  <h2>💬 Anonymous Comments</h2>
+  <textarea id="commentInput" placeholder="Write your comment..." rows="4" style="width:100%;"></textarea><br>
+  <button onclick="postComment()">Post</button>
 
-  <div id="comments"></div>
+  <div id="commentSection"></div>
 
-  <!-- Firebase Libraries -->
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
   <script>
-    // Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
       authDomain: "ishwar0980-7525b.firebaseapp.com",
       projectId: "ishwar0980-7525b",
       storageBucket: "ishwar0980-7525b.firebasestorage.app",
       messagingSenderId: "522376702284",
-      appId: "1:522376702284:web:433b482f1196c9c23d87e9",
-      measurementId: "G-W40FDR738Q"
+      appId: "1:522376702284:web:433b482f1196c9c23d87e9"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Post a comment
     function postComment() {
-      const text = document.getElementById('commentInput').value.trim();
-      if (!text) return alert("Comment can't be empty!");
+      const commentText = document.getElementById('commentInput').value.trim();
+      if (!commentText) return alert("Comment cannot be empty.");
 
-      db.collection('comments').add({
-        text: text,
+      db.collection("comments").add({
+        text: commentText,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        document.getElementById('commentInput').value = '';
-      }).catch(console.error);
+      })
+      .then(() => {
+        document.getElementById('commentInput').value = "";
+        console.log("Comment added");
+      })
+      .catch((error) => {
+        console.error("Error adding comment: ", error);
+      });
     }
 
-    // Show comments live
-    db.collection('comments')
-      .orderBy('timestamp', 'desc')
-      .onSnapshot(snapshot => {
-        const container = document.getElementById('comments');
-        container.innerHTML = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const el = document.createElement('div');
-          el.className = 'comment';
-          el.textContent = data.text;
-          container.appendChild(el);
-        });
+    db.collection("comments").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+      const section = document.getElementById('commentSection');
+      section.innerHTML = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.className = 'comment';
+        div.textContent = data.text || "(No text)";
+        section.appendChild(div);
       });
+    });
   </script>
+
 </body>
 </html>
