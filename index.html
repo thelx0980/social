@@ -1,150 +1,107 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube-Style Comments</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 2rem; }
-    .comment-section { max-width: 800px; margin: auto; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .add-comment { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-    .add-comment textarea { flex: 1; border: 1px solid #ccc; border-radius: 4px; padding: 0.5rem; resize: vertical; }
-    .add-comment button { background: #065fd4; color: #fff; border: none; padding: 0 1rem; border-radius: 4px; cursor: pointer; }
-    .comment { display: flex; gap: 1rem; margin-bottom: 1rem; }
-    .comment .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ccc; }
-    .comment .body { flex: 1; }
-    .meta { font-size: 0.9rem; color: #555; margin-bottom: 0.25rem; }
-    .text { margin-bottom: 0.5rem; }
-    .actions { font-size: 0.9rem; color: #065fd4; display: flex; gap: 1rem; }
-    .actions button { background: none; border: none; color: #065fd4; cursor: pointer; padding: 0; }
-    .reply-section { margin-top: 0.5rem; margin-left: 3rem; }
-    .reply { display: flex; gap: 1rem; margin-bottom: 0.75rem; }
-    .reply textarea { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 0.5rem; }
-    .load-more { background: none; border: none; color: #065fd4; cursor: pointer; margin: 1rem 0; }
-  </style>
-</head>
-<body>
-  <div class="comment-section">
-    <h2>Comments</h2>
-    <!-- Add Comment -->
-    <div class="add-comment">
-      <textarea id="newComment" rows="2" placeholder="Add a public comment..."></textarea>
-      <button id="postBtn">Comment</button>
-    </div>
-    <!-- Comments List -->
-    <div id="comments"></div>
-    <button class="load-more" id="loadMoreBtn">Load More Comments</button>
-  </div>  <!-- Firebase SDKs -->  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, startAfter, serverTimestamp, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  <title>Login - Firebase Auth</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithPopup,
+      GoogleAuthProvider,
+      signInAnonymously,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: 'AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24',
-      authDomain: 'ishwar0980-7525b.firebaseapp.com',
-      projectId: 'ishwar0980-7525b',
-      storageBucket: 'ishwar0980-7525b.appspot.com',
-      messagingSenderId: '522376702284',
-      appId: '1:522376702284:web:433b482f1196c9c23d87e9'
+      apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+      authDomain: "ishwar0980-7525b.firebaseapp.com",
+      projectId: "ishwar0980-7525b",
+      storageBucket: "ishwar0980-7525b.appspot.com",
+      messagingSenderId: "522376702284",
+      appId: "1:522376702284:web:433b482f1196c9c23d87e9",
+      measurementId: "G-W40FDR738Q"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
     let currentUser = null;
-    let lastVisible = null;
-    const pageSize = 5;
 
     onAuthStateChanged(auth, user => {
-      currentUser = user;
-      document.getElementById('postBtn').textContent = user ? 'Comment' : 'Sign in to comment';
+      const userInfo = document.getElementById("user-info");
+      if (user) {
+        currentUser = user;
+        const name = user.displayName || "Guest";
+        userInfo.innerHTML = `
+          <p>Signed in as <strong>${name}</strong></p>
+          <p>UID: ${user.uid}</p>
+          <button onclick="logout()">Sign Out</button>
+        `;
+      } else {
+        currentUser = null;
+        userInfo.innerHTML = `<p>Not signed in</p>`;
+      }
     });
 
-    document.getElementById('postBtn').onclick = async () => {
-      if (!currentUser) return signIn();
-      const text = document.getElementById('newComment').value.trim();
-      if (!text) return;
-      await addDoc(collection(db, 'comments'), {
-        text, user: currentUser.displayName, uid: currentUser.uid,
-        created: serverTimestamp(), likes: 0, replies: []
-      });
-      document.getElementById('newComment').value = '';
-      loadComments(true);
+    window.googleLogin = async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (e) {
+        alert("Google Sign-In failed: " + e.message);
+      }
     };
 
-    function signIn() {
-      signInWithPopup(auth, provider).catch(console.error);
-    }
-
-    function formatTime(ts) {
-      const diff = Date.now() - ts;
-      const sec = Math.floor(diff/1000);
-      if (sec<60) return sec+'s ago';
-      const min = Math.floor(sec/60);
-      if(min<60) return min+'m ago';
-      const hr = Math.floor(min/60);
-      if(hr<24) return hr+'h ago';
-      const d = Math.floor(hr/24);
-      return d+'d ago';
-    }
-
-    async function loadComments(reset=false) {
-      const container = document.getElementById('comments');
-      if (reset) { container.innerHTML=''; lastVisible=null; }
-      let q = query(collection(db,'comments'), orderBy('created','desc'), limit(pageSize));
-      if (lastVisible) q = query(q, startAfter(lastVisible));
-      const snap = await getDocs(q);
-      if (snap.empty) return;
-      lastVisible = snap.docs[snap.docs.length-1];
-      snap.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
-    }
-
-    function renderComment(id, data) {
-      const container = document.getElementById('comments');
-      const div = document.createElement('div'); div.className='comment';
-      const time = data.created?.toDate ? formatTime(data.created.toDate().getTime()) : '';
-      div.innerHTML = `
-        <div class='avatar'></div>
-        <div class='body'>
-          <div class='meta'><strong>${data.user}</strong> <span>${time}</span></div>
-          <div class='text'>${data.text}</div>
-          <div class='actions'>
-            <button onclick="like('${id}',${data.likes})">👍 ${data.likes}</button>
-            <button onclick="replyForm('${id}')">Reply</button>
-          </div>
-          <div class='reply-section' id='replies-${id}'></div>
-        </div>`;
-      container.appendChild(div);
-    }
-
-    window.like = async (id, current) => {
-      const ref = doc(db,'comments',id);
-      await updateDoc(ref,{likes: current+1});
-      loadComments(true);
+    window.guestLogin = async () => {
+      try {
+        await signInAnonymously(auth);
+      } catch (e) {
+        alert("Anonymous login failed: " + e.message);
+      }
     };
 
-    function replyForm(id) {
-      const sec = document.getElementById('replies-'+id);
-      if (sec.querySelector('textarea')) return;
-      const div = document.createElement('div'); div.className='reply';
-      div.innerHTML = `<textarea rows=2 placeholder='Add a reply...'></textarea><button onclick="postReply('${id}', this)">Reply</button>`;
-  sec.appendChild(div);
-}
+    window.emailRegister = async () => {
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        alert("Register failed: " + e.message);
+      }
+    };
 
-async function postReply(parentId, btn) {
-  if (!currentUser) return signIn();
-  const ta = btn.previousElementSibling;
-  const text = ta.value.trim(); if (!text) return;
-  await addDoc(collection(db,'comments',parentId,'replies'),{
-    text, user: currentUser.displayName, uid: currentUser.uid,
-    created: serverTimestamp()
-  });
-  loadComments(true);
-}
+    window.emailLogin = async () => {
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        alert("Login failed: " + e.message);
+      }
+    };
 
-loadComments();
-
+    window.logout = async () => {
+      await signOut(auth);
+    };
   </script>
+</head>
+<body>
+  <h2>Firebase Login Demo</h2>
+
+  <div id="user-info">Loading user...</div>
+
+  <hr>
+
+  <button onclick="googleLogin()">Sign in with Google</button><br><br>
+
+  <button onclick="guestLogin()">Continue as Guest</button><br><br>
+
+  <input type="email" id="email" placeholder="Email"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="emailLogin()">Login with Email</button>
+  <button onclick="emailRegister()">Register</button>
 </body>
 </html>
