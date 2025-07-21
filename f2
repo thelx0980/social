@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /comments/{commentId} {
+
+      allow read: if true;
+
+      allow create: if request.auth != null;
+
+      allow delete: if request.auth != null &&
+        (request.auth.uid == resource.data.uid || request.auth.uid == "LMRHGwdCUeRRJRQnOyPNFwDMtK92");
+
+      allow update: if request.auth != null &&
+        (
+          request.auth.uid == resource.data.uid
+          || request.auth.uid == "LMRHGwdCUeRRJRQnOyPNFwDMtK92"
+          || (
+            request.resource.data.keys().hasOnly(['likes', 'dislikes']) &&
+            request.resource.data.likes is list &&
+            request.resource.data.dislikes is list
+          )
+        );
+
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+
+        allow delete, update: if request.auth != null &&
+          (
+            request.auth.uid == resource.data.uid ||
+            request.auth.uid == "LMRHGwdCUeRRJRQnOyPNFwDMtK92"
+          );
+      }
+    }
+  }
+}
