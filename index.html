@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Auth-Guarded YouTube-Style Comments</title>
+  <title>Comments with Depth Control & Admin Delete</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
@@ -87,6 +87,7 @@ const firebaseConfig = {
   messagingSenderId: "522376702284",
   appId: "1:522376702284:web:433b482f1196c9c23d87e9"
 };
+const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
@@ -199,11 +200,23 @@ loadMoreBtn.onclick = () => loadComments();
 onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),
            ()=> loadComments(true));
 
-// — Render Single Comment —
+// — Render Single Comment (with depth & admin delete) —
 function renderComment(id,data) {
-  const isOwner = currentUser && currentUser.uid===data.uid;
-  const youLiked    = currentUser && data.likes.includes(currentUser.uid);
-  const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
+  const isOwner    = currentUser && currentUser.uid===data.uid;
+  const isAdmin    = currentUser && currentUser.uid===OWNER_UID;
+  const youLiked   = currentUser && data.likes.includes(currentUser.uid);
+  const youDisliked= currentUser && data.dislikes.includes(currentUser.uid);
+
+  // Build action buttons
+  let actions = `
+    <button class="like-btn mr-2 ${youLiked?'text-blue-600':''}">👍 ${data.likes.length}</button>
+    <button class="dislike-btn mr-2 ${youDisliked?'text-red-600':''}">👎 ${data.dislikes.length}</button>
+    <button class="reply-btn mr-2">Reply</button>
+  `;
+  if (isOwner || isAdmin) {
+    actions += `<button class="edit-btn mr-2">Edit</button>
+                <button class="delete-btn text-red-500">Delete</button>`;
+  }
 
   const div = document.createElement("div");
   div.className = "bg-white p-4 rounded shadow-sm";
@@ -215,19 +228,7 @@ function renderComment(id,data) {
       </p>
     </div>
     <p class="my-2">${data.text}</p>
-    <div class="flex items-center gap-4 text-sm">
-      <button class="like-btn flex items-center gap-1 ${youLiked?'text-blue-600':''}">
-        👍 <span>${data.likes.length}</span>
-      </button>
-      <button class="dislike-btn flex items-center gap-1 ${youDisliked?'text-red-600':''}">
-        👎 <span>${data.dislikes.length}</span>
-      </button>
-      <button class="reply-btn">Reply</button>
-      ${isOwner 
-        ? `<button class="edit-btn">Edit</button>
-           <button class="delete-btn text-red-500">Delete</button>` 
-        : ''}
-    </div>
+    <div class="flex items-center text-sm text-gray-600">${actions}</div>
     <div class="ml-6 mt-2 reply-form hidden">
       <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
       <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
@@ -235,13 +236,13 @@ function renderComment(id,data) {
     <div class="ml-6 mt-2 replies"></div>
   `;
 
-  // Like/dislike toggle (mutually exclusive)
-  div.querySelector(".like-btn").onclick = () => toggleReaction(id,"likes","dislikes");
+  // Like / Dislike toggle
+  div.querySelector(".like-btn").onclick    = () => toggleReaction(id,"likes","dislikes");
   div.querySelector(".dislike-btn").onclick = () => toggleReaction(id,"dislikes","likes");
 
   // Delete
-  const del = div.querySelector(".delete-btn");
-  if (del) del.onclick = async () => {
+  const delBtn = div.querySelector(".delete-btn");
+  if (delBtn) delBtn.onclick = async () => {
     if (confirm("Delete this comment?")) {
       await deleteDoc(doc(db,"comments",id));
       loadComments(true);
@@ -249,63 +250,65 @@ function renderComment(id,data) {
   };
 
   // Edit
-  const ed = div.querySelector(".edit-btn");
-  if (ed) ed.onclick = async () => {
-    const t = prompt("Edit your comment:", data.text);
+  const editBtn = div.querySelector(".edit-btn");
+  if (editBtn) editBtn.onclick = async () => {
+    const t = prompt("Edit comment:", data.text);
     if (t!=null) {
       await updateDoc(doc(db,"comments",id),{ text:t, edited:true });
       loadComments(true);
     }
   };
 
-  // Reply
-  const repBtn = div.querySelector(".reply-btn");
-  const repForm= div.querySelector(".reply-form");
-  const postRep= div.querySelector(".post-reply-btn");
-  const repliesCont = div.querySelector(".replies");
-
-  repBtn.onclick = () => repForm.classList.toggle("hidden");
+  // Reply (only one-level)
+  const replyBtn = div.querySelector(".reply-btn");
+  const replyForm= div.querySelector(".reply-form");
+  const postRep  = div.querySelector(".post-reply-btn");
+  const repliesC = div.querySelector(".replies");
+  replyBtn.onclick = () => replyForm.classList.toggle("hidden");
   postRep.onclick = async () => {
     if (!currentUser) return alert("Login first");
-    const ta = repForm.querySelector("textarea");
-    const txt= ta.value.trim();
+    const txt = replyForm.querySelector("textarea").value.trim();
     if (!txt) return;
-    await addDoc(collection(db,"comments",id,"replies"),{
-      text: txt, uid: currentUser.uid,
+
+    // Ensure no deeper nesting: only top-level replies
+    await addDoc(collection(db,"comments",id,"replies"), {
+      text: txt,
+      uid:  currentUser.uid,
       name: currentUser.displayName||"Guest",
       created: serverTimestamp()
     });
-    ta.value=""; repForm.classList.add("hidden");
-    loadReplies(id,repliesCont);
+    replyForm.querySelector("textarea").value = "";
+    replyForm.classList.add("hidden");
+    loadReplies(id,repliesC);
   };
 
-  // Load nested replies
+  // Load replies
   loadReplies(id, div.querySelector(".replies"));
 
   commentsDiv.appendChild(div);
 }
 
-// — Toggle Reaction —
+// Toggle Reaction (mutually exclusive)
 async function toggleReaction(id, addF, removeF) {
   if (!currentUser) return alert("Login first");
-  const ref  = doc(db,"comments",id);
-  const snap = await getDoc(ref);
-  const data = snap.data();
-  // remove opposite
+  const ref = doc(db,"comments",id);
+  const snap= await getDoc(ref);
+  const data= snap.data();
   if (data[removeF]?.includes(currentUser.uid)) {
     await updateDoc(ref,{ [removeF]: arrayRemove(currentUser.uid) });
   }
-  // toggle
   const has = data[addF]?.includes(currentUser.uid);
   const op  = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
   await updateDoc(ref,{ [addF]: op });
   loadComments(true);
 }
 
-// — Load Replies —
+// Load nested replies (1 level)
 async function loadReplies(parentId, container) {
   container.innerHTML = "";
-  const snap = await getDocs(query(collection(db,"comments",parentId,"replies"), orderBy("created","asc")));
+  const snap = await getDocs(
+    query(collection(db,"comments",parentId,"replies"), orderBy("created","asc"))
+  );
   snap.forEach(r => {
     const d = r.data();
     const el= document.createElement("div");
@@ -315,7 +318,7 @@ async function loadReplies(parentId, container) {
         <p class="text-sm font-semibold">${d.name}</p>
         <p class="text-xs text-gray-500">${d.created?timeAgo(d.created):""}</p>
       </div>
-      <p class="text-sm">${d.text}</p>
+      <p class="text-sm ml-4">${d.text}</p>
     `;
     container.appendChild(el);
   });
