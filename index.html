@@ -3,28 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Firebase YouTube-Style Comments</title>
+  <title>Popup Auth Comments</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
 <div class="max-w-3xl mx-auto p-6">
-
-  <!-- Auth controls -->
+  <!-- Auth Controls -->
   <div id="auth" class="mb-6">
     <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
     <div class="flex gap-2 flex-wrap">
-      <button id="google-btn" class="auth-show px-4 py-2 bg-blue-600 text-white rounded">Google</button>
-      <button id="anon-btn" class="auth-show px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
-      <input id="email-input" type="email" placeholder="Email" class="auth-show px-2 border rounded" />
-      <input id="pass-input" type="password" placeholder="Password" class="auth-show px-2 border rounded" />
-      <button id="login-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
-      <button id="reg-btn" class="auth-show px-4 py-2 bg-yellow-500 text-white rounded">Register</button>
-      <button id="logout-btn" class="auth-hide px-4 py-2 bg-red-500 text-white rounded hidden">Sign Out</button>
+      <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
+      <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
+      <button id="logout-btn" class="auth-hide hidden px-4 py-2 bg-red-600 text-white rounded">Logout</button>
     </div>
   </div>
 
-  <!-- New comment -->
+  <!-- New Comment -->
   <div class="mb-6">
     <textarea id="new-comment" rows="3" placeholder="Add a public comment..." 
               class="w-full p-3 border rounded"></textarea>
@@ -33,11 +28,36 @@
     </button>
   </div>
 
-  <!-- Comments list -->
+  <!-- Comments List -->
   <div id="comments" class="space-y-4"></div>
   <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
     Load More Comments
   </button>
+</div>
+
+<!-- Login Modal -->
+<div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-80">
+    <h2 class="text-lg font-semibold mb-4">Login Options</h2>
+    <input id="login-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
+    <input id="login-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
+    <button id="login-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
+    <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
+    <button onclick="closeModal('login-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-80">
+    <h2 class="text-lg font-semibold mb-4">Register Options</h2>
+    <input id="reg-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
+    <input id="reg-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
+    <button id="register-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
+    <button id="register-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
+    <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
+    <button onclick="closeModal('register-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+  </div>
 </div>
 
 <script type="module">
@@ -56,7 +76,6 @@ import {
   arrayUnion, arrayRemove, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// --- CONFIG & INIT ---
 const firebaseConfig = {
   apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
   authDomain: "ishwar0980-7525b.firebaseapp.com",
@@ -65,26 +84,29 @@ const firebaseConfig = {
   messagingSenderId: "522376702284",
   appId: "1:522376702284:web:433b482f1196c9c23d87e9"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// --- DOM ---
-const userInfo = document.getElementById("user-info");
-const googleBtn = document.getElementById("google-btn");
-const anonBtn = document.getElementById("anon-btn");
-const loginBtn = document.getElementById("login-btn");
-const regBtn = document.getElementById("reg-btn");
+// DOM Elements
+const loginBtn = document.getElementById("login-main-btn");
+const registerBtn = document.getElementById("register-main-btn");
 const logoutBtn = document.getElementById("logout-btn");
-const emailInput = document.getElementById("email-input");
-const passInput = document.getElementById("pass-input");
+const userInfo = document.getElementById("user-info");
 
-const authShow = document.querySelectorAll(".auth-show");
-const authHide = document.querySelectorAll(".auth-hide");
+const loginEmailInput = document.getElementById("login-email");
+const loginPassInput = document.getElementById("login-pass");
+const loginEmailBtn = document.getElementById("login-email-btn");
+const loginGoogleBtn = document.getElementById("login-google-btn");
 
-const newCommentEl = document.getElementById("new-comment");
+const regEmailInput = document.getElementById("reg-email");
+const regPassInput = document.getElementById("reg-pass");
+const registerEmailBtn = document.getElementById("register-email-btn");
+const registerGoogleBtn = document.getElementById("register-google-btn");
+const registerGuestBtn = document.getElementById("register-guest-btn");
+
+const commentBox = document.getElementById("new-comment");
 const postCommentBtn = document.getElementById("post-comment-btn");
 const commentsContainer = document.getElementById("comments");
 const loadMoreBtn = document.getElementById("load-more-btn");
@@ -93,31 +115,42 @@ let currentUser = null;
 let lastVisible = null;
 const PAGE_SIZE = 10;
 
-// --- AUTH BUTTONS ---
-googleBtn.onclick = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
-anonBtn.onclick = () => signInAnonymously(auth).catch(e => alert(e.message));
-loginBtn.onclick = () => signInWithEmailAndPassword(auth, emailInput.value, passInput.value).catch(e => alert(e.message));
-regBtn.onclick = () => createUserWithEmailAndPassword(auth, emailInput.value, passInput.value).catch(e => alert(e.message));
-logoutBtn.onclick = () => signOut(auth);
-
-// --- TOGGLE UI BASED ON AUTH ---
-function toggleAuthUI(loggedIn) {
-  authShow.forEach(el => el.classList.toggle("hidden", loggedIn));
-  authHide.forEach(el => el.classList.toggle("hidden", !loggedIn));
+// Modal helpers
+window.closeModal = function(id) {
+  document.getElementById(id).classList.add("hidden");
+};
+function openModal(id) {
+  document.getElementById(id).classList.remove("hidden");
 }
+
+// Auth logic
+loginBtn.onclick = () => openModal("login-modal");
+registerBtn.onclick = () => openModal("register-modal");
+
+loginGoogleBtn.onclick = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
+loginEmailBtn.onclick = () => signInWithEmailAndPassword(auth, loginEmailInput.value, loginPassInput.value).catch(e => alert(e.message));
+
+registerGoogleBtn.onclick = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
+registerEmailBtn.onclick = () => createUserWithEmailAndPassword(auth, regEmailInput.value, regPassInput.value).catch(e => alert(e.message));
+registerGuestBtn.onclick = () => signInAnonymously(auth).catch(e => alert(e.message));
+
+logoutBtn.onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
     userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
-    toggleAuthUI(true);
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
+    closeModal("login-modal");
+    closeModal("register-modal");
   } else {
     userInfo.textContent = "Not signed in";
-    toggleAuthUI(false);
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));
   }
 });
 
-// --- UTILITIES ---
 function timeAgo(ts) {
   const now = Date.now();
   const seconds = Math.floor((now - ts.toMillis()) / 1000);
@@ -130,10 +163,9 @@ function timeAgo(ts) {
   return `${days}d ago`;
 }
 
-// --- COMMENT CRUD & UI ---
 postCommentBtn.onclick = async () => {
   if (!currentUser) return alert("Please login first");
-  const text = newCommentEl.value.trim();
+  const text = commentBox.value.trim();
   if (!text) return;
   await addDoc(collection(db, "comments"), {
     text,
@@ -144,7 +176,7 @@ postCommentBtn.onclick = async () => {
     likes: [],
     dislikes: []
   });
-  newCommentEl.value = "";
+  commentBox.value = "";
   loadComments(true);
 };
 
@@ -161,8 +193,6 @@ async function loadComments(reset = false) {
   snap.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
 }
 
-loadMoreBtn.onclick = () => loadComments();
-
 function renderComment(id, data) {
   const div = document.createElement("div");
   div.className = "bg-white p-4 rounded shadow-sm";
@@ -172,98 +202,11 @@ function renderComment(id, data) {
       <p class="text-xs text-gray-500">${data.created ? timeAgo(data.created) : ""}${data.edited ? " • edited" : ""}</p>
     </div>
     <p class="my-2">${data.text}</p>
-    <div class="flex gap-4 text-sm text-gray-600">
-      <button class="like-btn">👍 ${data.likes.length}</button>
-      <button class="dislike-btn">👎 ${data.dislikes.length}</button>
-      <button class="reply-btn">Reply</button>
-      ${(currentUser?.uid === data.uid) ? `
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn text-red-500">Delete</button>` : ""}
-    </div>
-    <div class="ml-6 mt-2 reply-form hidden">
-      <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
-      <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
-    </div>
-    <div class="ml-6 mt-2 replies"></div>
   `;
-
-  const likeBtn = div.querySelector(".like-btn");
-  const dislikeBtn = div.querySelector(".dislike-btn");
-  likeBtn.onclick = () => toggleReaction(id, "likes");
-  dislikeBtn.onclick = () => toggleReaction(id, "dislikes");
-
-  const delBtn = div.querySelector(".delete-btn");
-  if (delBtn) delBtn.onclick = () => {
-    if (confirm("Delete this comment?")) {
-      deleteDoc(doc(db, "comments", id)).then(() => loadComments(true));
-    }
-  };
-
-  const editBtn = div.querySelector(".edit-btn");
-  if (editBtn) {
-    editBtn.onclick = async () => {
-      const newText = prompt("Edit your comment:", data.text);
-      if (newText != null) {
-        await updateDoc(doc(db, "comments", id), { text: newText, edited: true });
-        loadComments(true);
-      }
-    };
-  }
-
-  const replyBtn = div.querySelector(".reply-btn");
-  const replyForm = div.querySelector(".reply-form");
-  const postReplyBtn = div.querySelector(".post-reply-btn");
-  const repliesCont = div.querySelector(".replies");
-  replyBtn.onclick = () => replyForm.classList.toggle("hidden");
-  postReplyBtn.onclick = async () => {
-    if (!currentUser) return alert("Login first");
-    const ta = replyForm.querySelector("textarea");
-    const txt = ta.value.trim();
-    if (!txt) return;
-    await addDoc(collection(db, "comments", id, "replies"), {
-      text: txt,
-      uid: currentUser.uid,
-      name: currentUser.displayName || "Guest",
-      created: serverTimestamp()
-    });
-    ta.value = "";
-    replyForm.classList.add("hidden");
-    loadReplies(id, repliesCont);
-  };
-
-  loadReplies(id, repliesCont);
   commentsContainer.appendChild(div);
 }
 
-async function toggleReaction(commentId, field) {
-  if (!currentUser) return alert("Login first");
-  const ref = doc(db, "comments", commentId);
-  const snap = await getDoc(ref);
-  const arr = snap.data()[field] || [];
-  const has = arr.includes(currentUser.uid);
-  const op = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
-  await updateDoc(ref, { [field]: op });
-  loadComments(true);
-}
-
-async function loadReplies(commentId, container) {
-  container.innerHTML = "";
-  const snap = await getDocs(query(collection(db, "comments", commentId, "replies"), orderBy("created", "asc")));
-  snap.forEach(rsnap => {
-    const d = rsnap.data();
-    const el = document.createElement("div");
-    el.className = "bg-gray-50 p-2 rounded mb-1";
-    el.innerHTML = `
-      <div class="flex justify-between">
-        <p class="text-sm"><strong>${d.name}</strong></p>
-        <p class="text-xs text-gray-500">${d.created ? timeAgo(d.created) : ""}</p>
-      </div>
-      <p class="text-sm">${d.text}</p>
-    `;
-    container.appendChild(el);
-  });
-}
-
+loadMoreBtn.onclick = () => loadComments();
 onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), () => {
   loadComments(true);
 });
