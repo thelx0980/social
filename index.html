@@ -1,107 +1,160 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-  <title>Login - Firebase Auth</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Style Comment System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
       getAuth,
+      onAuthStateChanged,
       signInWithPopup,
       GoogleAuthProvider,
       signInAnonymously,
+      signOut,
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      serverTimestamp,
+      query,
+      orderBy,
+      doc,
+      deleteDoc,
+      updateDoc,
+      where,
+      limit,
+      increment,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";// Your Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+  authDomain: "ishwar0980-7525b.firebaseapp.com",
+  projectId: "ishwar0980-7525b",
+  storageBucket: "ishwar0980-7525b.appspot.com",
+  messagingSenderId: "522376702284",
+  appId: "1:522376702284:web:433b482f1196c9c23d87e9",
+  measurementId: "G-W40FDR738Q"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
-      authDomain: "ishwar0980-7525b.firebaseapp.com",
-      projectId: "ishwar0980-7525b",
-      storageBucket: "ishwar0980-7525b.appspot.com",
-      messagingSenderId: "522376702284",
-      appId: "1:522376702284:web:433b482f1196c9c23d87e9",
-      measurementId: "G-W40FDR738Q"
-    };
+const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-    let currentUser = null;
+let currentUser = null;
 
-    onAuthStateChanged(auth, user => {
-      const userInfo = document.getElementById("user-info");
-      if (user) {
-        currentUser = user;
-        const name = user.displayName || "Guest";
-        userInfo.innerHTML = `
-          <p>Signed in as <strong>${name}</strong></p>
-          <p>UID: ${user.uid}</p>
-          <button onclick="logout()">Sign Out</button>
-        `;
-      } else {
-        currentUser = null;
-        userInfo.innerHTML = `<p>Not signed in</p>`;
-      }
-    });
+const formatTimeAgo = (timestamp) => {
+  const now = new Date();
+  const seconds = Math.floor((now - timestamp.toDate()) / 1000);
+  const intervals = [
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 },
+    { label: 'second', seconds: 1 }
+  ];
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count > 0) return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+  }
+  return 'just now';
+};
 
-    window.googleLogin = async () => {
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (e) {
-        alert("Google Sign-In failed: " + e.message);
-      }
-    };
+const renderComments = async () => {
+  const commentRef = collection(db, "comments");
+  const q = query(commentRef, orderBy("created", "desc"), limit(10));
+  const snapshot = await getDocs(q);
+  const commentsEl = document.getElementById("comments");
+  commentsEl.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "border p-4 rounded mb-3 bg-white";
+    div.innerHTML = `
+      <p class="text-sm text-gray-700"><strong>${data.name}</strong> 
+      <span class="text-xs text-gray-500">${data.created ? formatTimeAgo(data.created) : ''}</span></p>
+      <p class="my-1">${data.text} ${data.edited ? '<span class=\"text-xs text-gray-400\">(edited)</span>' : ''}</p>
+      <div class="flex gap-4 text-sm text-gray-600">
+        <span>👍 ${data.likes || 0}</span>
+        <span>👎 ${data.dislikes || 0}</span>
+        ${currentUser && currentUser.uid === data.uid || currentUser?.uid === OWNER_UID ? 
+          `<button class="text-red-500" onclick="deleteComment('${docSnap.id}')">Delete</button>` : ''}
+      </div>
+    `;
+    commentsEl.appendChild(div);
+  });
+};
 
-    window.guestLogin = async () => {
-      try {
-        await signInAnonymously(auth);
-      } catch (e) {
-        alert("Anonymous login failed: " + e.message);
-      }
-    };
+window.postComment = async () => {
+  const text = document.getElementById("comment").value.trim();
+  if (!currentUser || !text) return alert("Login first and write something.");
+  await addDoc(collection(db, "comments"), {
+    text,
+    name: currentUser.displayName || "Anonymous",
+    uid: currentUser.uid,
+    created: serverTimestamp(),
+    edited: false,
+    likes: 0,
+    dislikes: 0
+  });
+  document.getElementById("comment").value = "";
+  renderComments();
+};
 
-    window.emailRegister = async () => {
-      const email = document.getElementById("email").value.trim();
-      const pass = document.getElementById("password").value.trim();
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-      } catch (e) {
-        alert("Register failed: " + e.message);
-      }
-    };
+window.deleteComment = async (id) => {
+  await deleteDoc(doc(db, "comments", id));
+  renderComments();
+};
 
-    window.emailLogin = async () => {
-      const email = document.getElementById("email").value.trim();
-      const pass = document.getElementById("password").value.trim();
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } catch (e) {
-        alert("Login failed: " + e.message);
-      }
-    };
+window.signInGoogle = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    alert("Google sign-in failed");
+  }
+};
 
-    window.logout = async () => {
-      await signOut(auth);
-    };
+window.signInAnon = async () => {
+  try {
+    await signInAnonymously(auth);
+  } catch (e) {
+    alert("Anonymous sign-in failed");
+  }
+};
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  document.getElementById("user").innerText = user ? `Logged in as ${user.displayName || "Guest"}` : "Not signed in";
+  renderComments();
+});
+
+window.onload = () => renderComments();
+
   </script>
 </head>
-<body>
-  <h2>Firebase Login Demo</h2>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Comment Section</h1>
+    <p id="user" class="mb-4 text-sm text-gray-600">Checking login...</p>
+    <div class="flex gap-2 mb-4">
+      <button onclick="signInGoogle()" class="bg-blue-500 text-white px-4 py-2 rounded">Sign in with Google</button>
+      <button onclick="signInAnon()" class="bg-gray-600 text-white px-4 py-2 rounded">Continue as Guest</button>
+    </div><textarea id="comment" class="w-full border rounded p-2 mb-2" rows="3" placeholder="Write a comment..."></textarea>
+<button onclick="postComment()" class="bg-green-600 text-white px-4 py-2 rounded">Post Comment</button>
 
-  <div id="user-info">Loading user...</div>
+<h2 class="mt-6 mb-2 text-lg font-semibold">Comments:</h2>
+<div id="comments" class="space-y-3"></div>
 
-  <hr>
-
-  <button onclick="googleLogin()">Sign in with Google</button><br><br>
-
-  <button onclick="guestLogin()">Continue as Guest</button><br><br>
-
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="emailLogin()">Login with Email</button>
-  <button onclick="emailRegister()">Register</button>
+  </div>
 </body>
 </html>
