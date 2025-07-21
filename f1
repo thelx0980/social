@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Match comments collection
+    match /comments/{commentId} {
+      
+      // Allow read access to anyone
+      allow read: if true;
+
+      // Only signed-in users can create new comments
+      allow create: if request.auth != null;
+
+      // Only comment owner can delete
+      allow delete: if request.auth != null
+                    && request.auth.uid == resource.data.uid;
+
+      // Allow update if:
+      // 1. Owner is editing their own comment
+      // 2. OR a signed-in user is updating only likes/dislikes
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.uid
+        || (
+          request.resource.data.keys().hasOnly(['likes', 'dislikes']) &&
+          request.resource.data.likes is list &&
+          request.resource.data.dislikes is list
+        )
+      );
+
+      // Replies inside comments
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow delete, update: if request.auth != null &&
+                               request.auth.uid == resource.data.uid;
+      }
+    }
+  }
+}
