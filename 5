@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Firebase YouTube-Style Comments</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<div class="max-w-3xl mx-auto p-6">
+
+  <!-- Auth controls -->
+  <div id="auth" class="mb-6">
+    <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
+    <div class="flex gap-2 flex-wrap">
+      <button id="google-btn" class="px-4 py-2 bg-blue-600 text-white rounded">Google</button>
+      <button id="anon-btn" class="px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
+      <input id="email-input" type="email" placeholder="Email" class="px-2 border rounded" />
+      <input id="pass-input" type="password" placeholder="Password" class="px-2 border rounded" />
+      <button id="login-btn" class="px-4 py-2 bg-green-600 text-white rounded">Login</button>
+      <button id="reg-btn" class="px-4 py-2 bg-yellow-500 text-white rounded">Register</button>
+      <button id="logout-btn" class="px-4 py-2 bg-red-500 text-white rounded hidden">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- New comment -->
+  <div class="mb-6">
+    <textarea id="new-comment" rows="3" placeholder="Add a public comment..." 
+              class="w-full p-3 border rounded"></textarea>
+    <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">
+      Post Comment
+    </button>
+  </div>
+
+  <!-- Comments list -->
+  <div id="comments" class="space-y-4"></div>
+  <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
+    Load More Comments
+  </button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider,
+  onAuthStateChanged, signInWithPopup,
+  signInAnonymously, createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, doc,
+  addDoc, updateDoc, deleteDoc,
+  serverTimestamp, query, orderBy,
+  limit, startAfter, getDocs, onSnapshot,
+  arrayUnion, arrayRemove, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// --- CONFIG & INIT ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+  authDomain: "ishwar0980-7525b.firebaseapp.com",
+  projectId: "ishwar0980-7525b",
+  storageBucket: "ishwar0980-7525b.appspot.com",
+  messagingSenderId: "522376702284",
+  appId: "1:522376702284:web:433b482f1196c9c23d87e9"
+};
+const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+// --- DOM ---
+const userInfo = document.getElementById("user-info");
+const googleBtn = document.getElementById("google-btn");
+const anonBtn = document.getElementById("anon-btn");
+const loginBtn = document.getElementById("login-btn");
+const regBtn = document.getElementById("reg-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const emailInput = document.getElementById("email-input");
+const passInput = document.getElementById("pass-input");
+const newCommentEl = document.getElementById("new-comment");
+const postCommentBtn = document.getElementById("post-comment-btn");
+const commentsContainer = document.getElementById("comments");
+const loadMoreBtn = document.getElementById("load-more-btn");
+
+let currentUser = null;
+let lastVisible = null;
+const PAGE_SIZE = 10;
+
+// --- AUTH HANDLERS ---
+googleBtn.onclick = () => signInWithPopup(auth, googleProvider).catch(e=>alert(e.message));
+anonBtn.onclick   = () => signInAnonymously(auth).catch(e=>alert(e.message));
+loginBtn.onclick  = () => signInWithEmailAndPassword(auth,
+  emailInput.value, passInput.value).catch(e=>alert(e.message));
+regBtn.onclick    = () => createUserWithEmailAndPassword(auth,
+  emailInput.value, passInput.value).catch(e=>alert(e.message));
+logoutBtn.onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    userInfo.textContent = `Hello, ${user.displayName||"Guest"}`;
+    logoutBtn.classList.remove("hidden");
+  } else {
+    userInfo.textContent = "Not signed in";
+    logoutBtn.classList.add("hidden");
+  }
+});
+
+// --- UTILS ---
+function timeAgo(ts) {
+  const now = Date.now();
+  const seconds = Math.floor((now - ts.toMillis())/1000);
+  if (seconds<60) return `${seconds}s ago`;
+  const mins = Math.floor(seconds/60);
+  if (mins<60) return `${mins}m ago`;
+  const hrs = Math.floor(mins/60);
+  if (hrs<24) return `${hrs}h ago`;
+  const days = Math.floor(hrs/24);
+  return `${days}d ago`;
+}
+
+// --- COMMENT CRUD & UI ---
+postCommentBtn.onclick = async () => {
+  if(!currentUser) return alert("Please login first");
+  const text = newCommentEl.value.trim();
+  if(!text) return;
+  await addDoc(collection(db,"comments"),{
+    text, uid: currentUser.uid,
+    name: currentUser.displayName||"Guest",
+    created: serverTimestamp(),
+    edited: false,
+    likes: [], dislikes: []
+  });
+  newCommentEl.value="";
+  loadComments(true);
+};
+
+async function loadComments(reset=false) {
+  if(reset) {
+    commentsContainer.innerHTML="";
+    lastVisible = null;
+  }
+  let q = query(collection(db,"comments"), orderBy("created","desc"), limit(PAGE_SIZE));
+  if(lastVisible) q = query(q, startAfter(lastVisible));
+  const snap = await getDocs(q);
+  loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
+  lastVisible = snap.docs[snap.docs.length-1];
+  snap.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
+}
+
+loadMoreBtn.onclick = () => loadComments();
+
+function renderComment(id,data) {
+  const div = document.createElement("div");
+  div.className = "bg-white p-4 rounded shadow-sm";
+  div.innerHTML = `
+    <div class="flex justify-between">
+      <p class="font-semibold">${data.name}</p>
+      <p class="text-xs text-gray-500">${data.created?timeAgo(data.created):""}${data.edited?" • edited":""}</p>
+    </div>
+    <p class="my-2">${data.text}</p>
+    <div class="flex gap-4 text-sm text-gray-600">
+      <button class="like-btn">👍 ${data.likes.length}</button>
+      <button class="dislike-btn">👎 ${data.dislikes.length}</button>
+      <button class="reply-btn">Reply</button>
+      ${(currentUser?.uid===data.uid) ? 
+        `<button class="edit-btn">Edit</button>
+         <button class="delete-btn text-red-500">Delete</button>` : ""}
+    </div>
+    <div class="ml-6 mt-2 reply-form hidden">
+      <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
+      <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
+    </div>
+    <div class="ml-6 mt-2 replies"></div>
+  `;
+
+  // hook up like/dislike
+  const likeBtn    = div.querySelector(".like-btn");
+  const dislikeBtn = div.querySelector(".dislike-btn");
+  likeBtn.onclick    = () => toggleReaction(id,"likes");
+  dislikeBtn.onclick = () => toggleReaction(id,"dislikes");
+
+  // delete
+  const delBtn = div.querySelector(".delete-btn");
+  if(delBtn) delBtn.onclick = () => {
+    if(confirm("Delete this comment?")) {
+      deleteDoc(doc(db,"comments",id)).then(()=>loadComments(true));
+    }
+  };
+
+  // edit
+  const editBtn = div.querySelector(".edit-btn");
+  if(editBtn) {
+    editBtn.onclick = async () => {
+      const newText = prompt("Edit your comment:",data.text);
+      if(newText!=null) {
+        await updateDoc(doc(db,"comments",id),{ text:newText, edited:true });
+        loadComments(true);
+      }
+    };
+  }
+
+  // reply
+  const replyBtn      = div.querySelector(".reply-btn");
+  const replyForm     = div.querySelector(".reply-form");
+  const postReplyBtn  = div.querySelector(".post-reply-btn");
+  const repliesCont   = div.querySelector(".replies");
+  replyBtn.onclick    = () => replyForm.classList.toggle("hidden");
+  postReplyBtn.onclick = async () => {
+    if(!currentUser) return alert("Login first");
+    const ta = replyForm.querySelector("textarea");
+    const txt = ta.value.trim();
+    if(!txt) return;
+    await addDoc(collection(db,"comments",id,"replies"),{
+      text: txt,
+      uid: currentUser.uid,
+      name: currentUser.displayName||"Guest",
+      created: serverTimestamp()
+    });
+    ta.value=""; replyForm.classList.add("hidden");
+    loadReplies(id,repliesCont);
+  };
+
+  // initial replies load
+  loadReplies(id, div.querySelector(".replies"));
+
+  commentsContainer.appendChild(div);
+}
+
+async function toggleReaction(commentId, field) {
+  if(!currentUser) return alert("Login first");
+  const ref = doc(db,"comments",commentId);
+  const snap = await getDoc(ref);
+  const arr  = snap.data()[field] || [];
+  const has  = arr.includes(currentUser.uid);
+  const op   = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
+  await updateDoc(ref,{ [field]: op });
+  loadComments(true);
+}
+
+async function loadReplies(commentId, container) {
+  container.innerHTML = "";
+  const snap = await getDocs(query(collection(db,"comments",commentId,"replies"),orderBy("created","asc")));
+  snap.forEach(rsnap => {
+    const d = rsnap.data();
+    const el = document.createElement("div");
+    el.className = "bg-gray-50 p-2 rounded mb-1";
+    el.innerHTML = `
+      <div class="flex justify-between">
+        <p class="text-sm"><strong>${d.name}</strong></p>
+        <p class="text-xs text-gray-500">${d.created?timeAgo(d.created):""}</p>
+      </div>
+      <p class="text-sm">${d.text}</p>
+    `;
+    container.appendChild(el);
+  });
+}
+
+// live updates
+onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),()=>{
+  loadComments(true);
+});
+
+// initial load
+loadComments();
+
+</script>
+</body>
+</html>
