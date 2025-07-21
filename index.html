@@ -173,22 +173,31 @@
     };  
   
     async function loadComments(reset = false) {  
-      if (reset) {  
-        commentsDiv.innerHTML = "";  
-        lastVisible = null;  
-      }  
-      let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));  
-      if (lastVisible) q = query(collection(db, "comments"), orderBy("created", "desc"), startAfter(lastVisible), limit(PAGE_SIZE));  
-      const snap = await getDocs(q);  
-      if (!snap.empty) {  
-        lastVisible = snap.docs[snap.docs.length - 1];  
-        snap.docs.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));  
-      }  
-      loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);  
-    }  
-  
-    loadMoreBtn.onclick = () => loadComments();  
-  
+    async function loadComments(reset = false) {
+      if (reset) {
+        commentsDiv.innerHTML = "";
+        lastVisible = null;
+      }
+
+      let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
+      if (lastVisible) {
+        q = query(collection(db, "comments"), orderBy("created", "desc"), startAfter(lastVisible), limit(PAGE_SIZE));
+      }
+
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        lastVisible = snap.docs[snap.docs.length - 1];
+        snap.docs.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
+      }
+
+  // ✅ Show "Load More" only if more comments might exist
+      const nextPage = query(collection(db, "comments"), orderBy("created", "desc"), startAfter(lastVisible), limit(1));
+      const nextSnap = await getDocs(nextPage);
+
+      loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE || nextSnap.empty);
+    }
+      
     onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), () => loadComments(true));  
   
     async function loadReplies(parentId, container, reset = false) {  
