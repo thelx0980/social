@@ -365,26 +365,114 @@
       const replyForm = div.querySelector('.reply-form');  
       const repliesC = div.querySelector('.replies');  
 
-      div.querySelector('.post-reply-btn').onclick = async () => {  
-        if (!currentUser) return alert("Login first");  
-        const ta = replyForm.querySelector("textarea");  
-        const txt = ta.value.trim();  
-        if (!txt) return;  
-        await addDoc(collection(db, "comments", id, "replies"), {  
-          text: txt,  
-          uid: currentUser.uid,  
-          name: currentUser.displayName || "Guest",  
-          photoURL: currentUser.photoURL || null,  
-          created: serverTimestamp()  
-        });  
-        ta.value = '';  
-        replyForm.classList.add('hidden');  
-        loadReplies(id, repliesC, true);  
-      };  
+function renderComment(id, data) {
+    const isOwner = currentUser?.uid === data.uid;
+    const isAdmin = data.uid === OWNER_UID;
+    const youLiked = currentUser && data.likes.includes(currentUser.uid);
+    const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
+    const avatarURL = data.photoURL || '/default-avatar.png';
 
-      loadReplies(id, repliesC, true);  
-      commentsDiv.appendChild(div);  
+    const actions = [];
+    actions.push(`<button data-action="like" class="mr-2 ${youLiked ? 'text-blue-600' : ''}">👍 ${data.likes.length}</button>`);
+    actions.push(`<button data-action="dislike" class="mr-2 ${youDisliked ? 'text-red-600' : ''}">👎 ${data.dislikes.length}</button>`);
+    actions.push(`<button data-action="reply" class="mr-2">Reply</button>`);
+    if (isOwner || isAdmin) {
+        actions.push(`<button data-action="edit" class="mr-2">Edit</button>`);
+        actions.push(`<button data-action="delete" class="text-red-500">Delete</button>`);
     }
+
+    const div = document.createElement("div");
+    div.className = `bg-white p-4 rounded shadow-sm ${isAdmin ? 'border-2 border-yellow-400' : ''}`;
+    div.innerHTML = `
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <img src="${avatarURL}" class="w-8 h-8 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" />
+                <p class="font-semibold ${isAdmin ? 'text-yellow-600' : ''}">
+                    ${data.name}${isAdmin ? ' ★' : ''}
+                </p>
+            </div>
+            <p class="text-xs text-gray-500">${data.created ? timeAgo(data.created) : ''}${data.edited ? ' • edited' : ''}</p>
+        </div>
+        <p class="my-2">${data.text}</p>
+        <div class="flex items-center text-sm text-gray-600">${actions.join('')}</div>
+        <div class="ml-6 mt-2 reply-form hidden">
+            <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
+            <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
+        </div>
+        <div class="ml-6 mt-2 replies"></div>
+    `;
+
+    const handleAction = async (action, event) => {
+        const ref = doc(db, "comments", id);
+
+        if (action === 'like' || action === 'dislike') {
+            if (!currentUser) return alert("Login first");
+
+            const addField = action === 'like' ? 'likes' : 'dislikes';
+            const removeField = action === 'like' ? 'dislikes' : 'likes';
+
+            const snap = await getDoc(ref);
+            const d = snap.data();
+
+            if (d[addField].includes(currentUser.uid)) {
+                await updateDoc(ref, { [addField]: arrayRemove(currentUser.uid) });
+            } else {
+                if (d[removeField].includes(currentUser.uid)) {
+                    await updateDoc(ref, { [removeField]: arrayRemove(currentUser.uid) });
+                }
+                await updateDoc(ref, { [addField]: arrayUnion(currentUser.uid) });
+            }
+            loadComments(true);
+        }
+
+        else if (action === 'reply') {
+            div.querySelector('.reply-form').classList.toggle('hidden');
+        }
+
+        else if (action === 'edit') {
+            const t = prompt("Edit comment:", data.text);
+            if (t != null) {
+                await updateDoc(ref, { text: t, edited: true });
+                loadComments(true);
+            }
+        }
+
+        else if (action === 'delete') {
+            if (confirm("Delete this comment?")) {
+                await deleteDoc(ref);
+                loadComments(true);
+            }
+        }
+    };
+
+    div.querySelectorAll("button").forEach(btn => {
+        const act = btn.getAttribute('data-action');
+        if (act) btn.onclick = e => handleAction(act, e);
+    });
+
+    const replyForm = div.querySelector('.reply-form');
+    const repliesC = div.querySelector('.replies');
+
+    div.querySelector('.post-reply-btn').onclick = async () => {
+        if (!currentUser) return alert("Login first");
+        const ta = replyForm.querySelector("textarea");
+        const txt = ta.value.trim();
+        if (!txt) return;
+        await addDoc(collection(db, "comments", id, "replies"), {
+            text: txt,
+            uid: currentUser.uid,
+            name: currentUser.displayName || "Guest",
+            photoURL: currentUser.photoURL || null,
+            created: serverTimestamp()
+        });
+        ta.value = '';
+        replyForm.classList.add('hidden');
+        loadReplies(id, repliesC, true);
+    };
+
+    loadReplies(id, repliesC, true);
+    commentsDiv.appendChild(div);
+}
   </script>  
 </body>  
 </html>  
