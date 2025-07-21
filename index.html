@@ -1,37 +1,136 @@
-<button onclick="facebookLogin()">Login with Facebook</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio with Comments</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .comment-box {
+      margin-top: 2rem;
+      max-width: 600px;
+    }
+    .comment {
+      border-bottom: 1px solid #ccc;
+      padding: 1rem 0;
+    }
+    .timestamp {
+      color: gray;
+      font-size: 0.9rem;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-top: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getAuth,
-    signInWithPopup,
-    FacebookAuthProvider,
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <h1>My Project</h1>
+  <p>This is a project portfolio page with comment feature.</p>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
-    authDomain: "ishwar0980-7525b.firebaseapp.com",
-    projectId: "ishwar0980-7525b",
-    storageBucket: "ishwar0980-7525b.appspot.com",
-    messagingSenderId: "522376702284",
-    appId: "1:522376702284:web:433b482f1196c9c23d87e9",
-    measurementId: "G-W40FDR738Q"
-  };
+  <button onclick="facebookLogin()">Login with Facebook</button>
+  <p id="user-info"></p>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new FacebookAuthProvider();
+  <div class="comment-box" id="comment-section" style="display: none;">
+    <h2>Leave a Comment</h2>
+    <textarea id="comment-text" placeholder="Write your comment..."></textarea>
+    <br>
+    <button onclick="submitComment()">Post Comment</button>
 
-  window.facebookLogin = function () {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        alert("Logged in as: " + user.displayName);
-        // You can now post comment or show comment box
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("Login failed");
+    <h3 style="margin-top:2rem;">All Comments</h3>
+    <div id="all-comments"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithPopup, FacebookAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+      authDomain: "ishwar0980-7525b.firebaseapp.com",
+      projectId: "ishwar0980-7525b",
+      storageBucket: "ishwar0980-7525b.appspot.com",
+      messagingSenderId: "522376702284",
+      appId: "1:522376702284:web:433b482f1196c9c23d87e9",
+      measurementId: "G-W40FDR738Q"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new FacebookAuthProvider();
+
+    let currentUser = null;
+
+    window.facebookLogin = function () {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          currentUser = result.user;
+          document.getElementById('user-info').innerText = "Hello, " + currentUser.displayName;
+          document.getElementById('comment-section').style.display = "block";
+          loadComments();
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Login failed");
+        });
+    };
+
+    async function submitComment() {
+      const commentText = document.getElementById('comment-text').value.trim();
+      if (!commentText || !currentUser) return;
+
+      await addDoc(collection(db, "comments"), {
+        text: commentText,
+        user: currentUser.displayName,
+        uid: currentUser.uid,
+        createdAt: serverTimestamp()
       });
-  };
-</script>
+
+      document.getElementById('comment-text').value = '';
+      loadComments();
+    }
+
+    async function loadComments() {
+      const q = query(collection(db, "comments"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const container = document.getElementById('all-comments');
+      container.innerHTML = "";
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const date = data.createdAt?.toDate()?.toLocaleString() || "Just now";
+        container.innerHTML += `
+          <div class="comment">
+            <strong>${data.user}</strong><br/>
+            <div>${data.text}</div>
+            <div class="timestamp">${date}</div>
+          </div>
+        `;
+      });
+    }
+
+    // Auto show comment section if already logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('user-info').innerText = "Hello, " + currentUser.displayName;
+        document.getElementById('comment-section').style.display = "block";
+        loadComments();
+      }
+    });
+  </script>
+
+</body>
+</html>
