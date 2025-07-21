@@ -208,22 +208,24 @@
       }  
     }  
   
-    function renderReply({ id, name, text, created, photoURL, uid }, container) {  
-      const isAdmin = currentUser?.uid === OWNER_UID;  
-      const avatar = photoURL || '/default-avatar.png';  
-      const el = document.createElement("div");  
-      el.className = "bg-gray-50 p-2 rounded mb-1 flex items-start gap-2";  
-      el.innerHTML = `  
-        <img src="${avatar}" class="w-6 h-6 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" alt="${name}" />  
-        <div class="flex-1">  
-          <div class="flex justify-between">  
-            <p class="text-sm font-semibold ${isAdmin ? 'text-yellow-600' : ''}">${name}${isAdmin ? ' ★' : ''}</p>  
-            <p class="text-xs text-gray-500">${created ? timeAgo(created) : ''}</p>  
-          </div>  
-          <p class="text-sm ml-1">${text}</p>  
-        </div>`;  
-      container.appendChild(el);  
-    }  
+    function renderReply({ id, name, text, created, photoURL, uid }, container) {
+      const isAdmin = uid === OWNER_UID; // ✅ Fixed: Check reply author's UID
+      const avatar = photoURL || '/default-avatar.png';
+      const el = document.createElement("div");
+      el.className = "bg-gray-50 p-2 rounded mb-1 flex items-start gap-2";
+      el.innerHTML = `
+        <img src="${avatar}" class="w-6 h-6 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" alt="${name}" />
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <p class="text-sm font-semibold ${isAdmin ? 'text-yellow-600' : ''}">
+              ${name}${isAdmin ? ' ★' : ''}
+            </p>
+            <p class="text-xs text-gray-500">${created ? timeAgo(created) : ''}</p>
+          </div>
+          <p class="text-sm ml-1">${text}</p>
+        </div>`;
+      container.appendChild(el);
+    }
   
     function renderComment(id, data) {  
       const isOwner = currentUser?.uid === data.uid;  
