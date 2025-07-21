@@ -143,7 +143,10 @@
         document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));  
         document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));  
       }  
-      loadComments(true); // Refresh comments on auth change  
+      const updatedSnap = await getDoc(ref);
+      const updatedData = updatedSnap.data();
+      div.remove();
+      renderComment(id, updatedData);
     });  
   
     function timeAgo(ts) {  
@@ -169,7 +172,10 @@
         dislikes: []  
       });  
       newCommentEl.value = "";  
-      loadComments(true);  
+      const updatedSnap = await getDoc(ref);
+      const updatedData = updatedSnap.data();
+      div.remove();
+      renderComment(id, updatedData);
     };  
   
     async function loadComments(reset = false) {
