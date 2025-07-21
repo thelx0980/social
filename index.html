@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Comments with Depth Control & Admin Delete</title>
+  <title>Comments with Depth Control & Admin Highlight</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
@@ -43,7 +43,7 @@
     <input id="login-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
     <input id="login-pass"  type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
     <button id="login-email-btn"  class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-    <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600  text-white rounded">Google</button>
+    <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
     <button onclick="closeModal('login-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
   </div>
 </div>
@@ -55,8 +55,8 @@
     <input id="reg-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
     <input id="reg-pass"  type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
     <button id="register-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-    <button id="register-google-btn"class="w-full mb-2 px-4 py-2 bg-blue-600  text-white rounded">Google</button>
-    <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600  text-white rounded">Guest</button>
+    <button id="register-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
+    <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
     <button onclick="closeModal('register-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
   </div>
 </div>
@@ -94,138 +94,173 @@ const db   = getFirestore(app);
 const gp   = new GoogleAuthProvider();
 
 // — DOM Refs —
-const
-  loginBtn    = document.getElementById("login-main-btn"),
-  registerBtn = document.getElementById("register-main-btn"),
-  logoutBtn   = document.getElementById("logout-btn"),
-  userInfo    = document.getElementById("user-info"),
-  newCommentEl= document.getElementById("new-comment"),
-  postCommentBtn = document.getElementById("post-comment-btn"),
-  commentsDiv = document.getElementById("comments"),
-  loadMoreBtn = document.getElementById("load-more-btn");
+const loginBtn       = document.getElementById("login-main-btn"),
+      registerBtn    = document.getElementById("register-main-btn"),
+      logoutBtn      = document.getElementById("logout-btn"),
+      userInfo       = document.getElementById("user-info"),
+      newCommentEl   = document.getElementById("new-comment"),
+      postCommentBtn = document.getElementById("post-comment-btn"),
+      commentsDiv    = document.getElementById("comments"),
+      loadMoreBtn    = document.getElementById("load-more-btn");
 
-// — Modal Functions —
+// — Modal Controls —
 window.closeModal = id => document.getElementById(id).classList.add("hidden");
-const openModal  = id => document.getElementById(id).classList.remove("hidden");
+const openModal   = id => document.getElementById(id).classList.remove("hidden");
 
-// — Auth UI setup —
-loginBtn.onclick     = () => openModal("login-modal");
-registerBtn.onclick  = () => openModal("register-modal");
-logoutBtn.onclick    = () => signOut(auth);
+loginBtn.onclick    = () => openModal("login-modal");
+registerBtn.onclick = () => openModal("register-modal");
+logoutBtn.onclick   = () => signOut(auth);
 
-// Login handlers
+// — Auth Handlers —
 document.getElementById("login-email-btn").onclick = () =>
   signInWithEmailAndPassword(auth,
     document.getElementById("login-email").value,
     document.getElementById("login-pass").value
-  ).catch(e=>alert(e.message));
+  ).catch(e => alert(e.message));
 
 document.getElementById("login-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e=>alert(e.message));
+  signInWithPopup(auth, gp).catch(e => alert(e.message));
 
-// Register handlers
 document.getElementById("register-email-btn").onclick = () =>
   createUserWithEmailAndPassword(auth,
     document.getElementById("reg-email").value,
     document.getElementById("reg-pass").value
-  ).catch(e=>alert(e.message));
+  ).catch(e => alert(e.message));
 
 document.getElementById("register-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e=>alert(e.message));
+  signInWithPopup(auth, gp).catch(e => alert(e.message));
 
 document.getElementById("register-guest-btn").onclick = () =>
-  signInAnonymously(auth).catch(e=>alert(e.message));
+  signInAnonymously(auth).catch(e => alert(e.message));
 
 // — State & Pagination —
 let currentUser = null, lastVisible = null;
 const PAGE_SIZE = 10;
 
-// — Auth State Listener —
 onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
-    userInfo.textContent = `Hello, ${user.displayName||"Guest"}`;
-    document.querySelectorAll(".auth-show").forEach(el=>el.classList.add("hidden"));
-    document.querySelectorAll(".auth-hide").forEach(el=>el.classList.remove("hidden"));
+    userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
     closeModal("login-modal");
     closeModal("register-modal");
   } else {
     userInfo.textContent = "Not signed in";
-    document.querySelectorAll(".auth-show").forEach(el=>el.classList.remove("hidden"));
-    document.querySelectorAll(".auth-hide").forEach(el=>el.classList.add("hidden"));
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));
   }
 });
 
 // — Utility: time ago —
 function timeAgo(ts) {
   const now = Date.now(), secs = Math.floor((now - ts.toMillis())/1000);
-  if (secs<60) return `${secs}s ago`;
+  if (secs < 60) return `${secs}s ago`;
   const m = Math.floor(secs/60);
-  if (m<60) return `${m}m ago`;
+  if (m < 60) return `${m}m ago`;
   const h = Math.floor(m/60);
-  if (h<24) return `${h}h ago`;
+  if (h < 24) return `${h}h ago`;
   return `${Math.floor(h/24)}d ago`;
 }
 
-// — Post Comment —
+// — Post Comment (with photoURL) —
 postCommentBtn.onclick = async () => {
   if (!currentUser) return alert("Please login first");
   const txt = newCommentEl.value.trim();
   if (!txt) return;
-  await addDoc(collection(db,"comments"), {
+  await addDoc(collection(db, "comments"), {
     text: txt,
-    uid:  currentUser.uid,
-    name: currentUser.displayName||"Guest",
+    uid: currentUser.uid,
+    name: currentUser.displayName || "Guest",
+    photoURL: currentUser.photoURL || null,
     created: serverTimestamp(),
     edited: false,
-    likes:  [], dislikes: []
+    likes: [], dislikes: []
   });
   newCommentEl.value = "";
   loadComments(true);
 };
 
 // — Load & Render Comments —
-async function loadComments(reset=false) {
-  if (reset) { commentsDiv.innerHTML=""; lastVisible=null; }
-  let q = query(collection(db,"comments"), orderBy("created","desc"), limit(PAGE_SIZE));
+async function loadComments(reset = false) {
+  if (reset) { commentsDiv.innerHTML = ""; lastVisible = null; }
+  let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
   if (lastVisible) q = query(q, startAfter(lastVisible));
   const snap = await getDocs(q);
   loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
-  lastVisible = snap.docs[snap.docs.length-1];
+  lastVisible = snap.docs[snap.docs.length - 1];
   snap.forEach(d => renderComment(d.id, d.data()));
 }
 loadMoreBtn.onclick = () => loadComments();
+onSnapshot(
+  query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)),
+  () => loadComments(true)
+);
 
-// Live update on top PAGE_SIZE
-onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),
-           ()=> loadComments(true));
+// — Render Helpers —
+function renderReply({ id, name, text, created, photoURL, uid }, container) {
+  const isAdmin = uid === OWNER_UID;
+  const avatar = photoURL || '/default-avatar.png';
+  const el = document.createElement("div");
+  el.className = "bg-gray-50 p-2 rounded mb-1 flex items-start gap-2";
+  el.innerHTML = `
+    <img src="${avatar}" class="w-6 h-6 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" alt="${name}" />
+    <div class="flex-1">
+      <div class="flex justify-between">
+        <p class="text-sm font-semibold ${isAdmin ? 'text-yellow-600' : ''}">${name}${isAdmin ? ' ★' : ''}</p>
+        <p class="text-xs text-gray-500">${created ? timeAgo(created) : ''}</p>
+      </div>
+      <p class="text-sm ml-1">${text}</p>
+    </div>`;
+  container.appendChild(el);
+}
 
-// — Render Single Comment (with depth & admin delete) —
-function renderComment(id,data) {
-  const isOwner    = currentUser && currentUser.uid===data.uid;
-  const isAdmin    = currentUser && currentUser.uid===OWNER_UID;
+async function loadReplies(parentId, container, reset = false) {
+  if (reset) container.innerHTML = "";
+  const snap = await getDocs(
+    query(collection(db, "comments", parentId, "replies"), orderBy("created", "asc"))
+  );
+  const replies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  replies.slice(0, 5).forEach(r => renderReply(r, container));
+  if (replies.length > 5) {
+    const btn = document.createElement("button");
+    btn.textContent = `Show ${replies.length - 5} more replies`;
+    btn.className = "text-sm text-blue-500 ml-6";
+    container.appendChild(btn);
+    btn.onclick = () => {
+      replies.slice(5).forEach(r => renderReply(r, container));
+      btn.remove();
+    };
+  }
+}
+
+function renderComment(id, data) {
+  const isOwner    = currentUser && currentUser.uid === data.uid;
+  const isAdmin    = data.uid === OWNER_UID;
   const youLiked   = currentUser && data.likes.includes(currentUser.uid);
   const youDisliked= currentUser && data.dislikes.includes(currentUser.uid);
+  const avatarURL  = currentUser?.uid === data.uid
+    ? (currentUser.photoURL || '/default-owner.png')
+    : (data.photoURL || '/default-avatar.png');
 
-  // Build action buttons
   let actions = `
-    <button class="like-btn mr-2 ${youLiked?'text-blue-600':''}">👍 ${data.likes.length}</button>
-    <button class="dislike-btn mr-2 ${youDisliked?'text-red-600':''}">👎 ${data.dislikes.length}</button>
+    <button class="like-btn mr-2 ${youLiked ? 'text-blue-600' : ''}">👍 ${data.likes.length}</button>
+    <button class="dislike-btn mr-2 ${youDisliked ? 'text-red-600' : ''}">👎 ${data.dislikes.length}</button>
     <button class="reply-btn mr-2">Reply</button>
   `;
   if (isOwner || isAdmin) {
-    actions += `<button class="edit-btn mr-2">Edit</button>
-                <button class="delete-btn text-red-500">Delete</button>`;
+    actions += `<button class="edit-btn mr-2">Edit</button><button class="delete-btn text-red-500">Delete</button>`;
   }
 
   const div = document.createElement("div");
-  div.className = "bg-white p-4 rounded shadow-sm";
+  div.className = `bg-white p-4 rounded shadow-sm ${isAdmin ? 'border-2 border-yellow-400' : ''}`;
   div.innerHTML = `
-    <div class="flex justify-between">
-      <p class="font-semibold">${data.name}</p>
-      <p class="text-xs text-gray-500">
-        ${data.created?timeAgo(data.created):""}${data.edited?" • edited":""}
-      </p>
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="${avatarURL}" class="w-8 h-8 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" alt="${data.name}" />
+        <p class="font-semibold ${isAdmin ? 'text-yellow-600' : ''}">${data.name}${isAdmin ? ' ★' : ''}</p>
+      </div>
+      <p class="text-xs text-gray-500">${data.created ? timeAgo(data.created) : ''}${data.edited ? ' • edited' : ''}</p>
     </div>
     <p class="my-2">${data.text}</p>
     <div class="flex items-center text-sm text-gray-600">${actions}</div>
@@ -236,97 +271,70 @@ function renderComment(id,data) {
     <div class="ml-6 mt-2 replies"></div>
   `;
 
-  // Like / Dislike toggle
-  div.querySelector(".like-btn").onclick    = () => toggleReaction(id,"likes","dislikes");
-  div.querySelector(".dislike-btn").onclick = () => toggleReaction(id,"dislikes","likes");
+  div.querySelector(".like-btn").onclick    = () => toggleReaction(id, "likes", "dislikes");
+  div.querySelector(".dislike-btn").onclick = () => toggleReaction(id, "dislikes", "likes");
 
-  // Delete
   const delBtn = div.querySelector(".delete-btn");
   if (delBtn) delBtn.onclick = async () => {
     if (confirm("Delete this comment?")) {
-      await deleteDoc(doc(db,"comments",id));
+      await deleteDoc(doc(db, "comments", id));
       loadComments(true);
     }
   };
 
-  // Edit
   const editBtn = div.querySelector(".edit-btn");
   if (editBtn) editBtn.onclick = async () => {
     const t = prompt("Edit comment:", data.text);
-    if (t!=null) {
-      await updateDoc(doc(db,"comments",id),{ text:t, edited:true });
+    if (t != null) {
+      await updateDoc(doc(db, "comments", id), { text: t, edited: true });
       loadComments(true);
     }
   };
 
-  // Reply (only one-level)
-  const replyBtn = div.querySelector(".reply-btn");
-  const replyForm= div.querySelector(".reply-form");
-  const postRep  = div.querySelector(".post-reply-btn");
-  const repliesC = div.querySelector(".replies");
+  const replyBtn = div.querySelector(".reply-btn"),
+        replyForm = div.querySelector(".reply-form"),
+        postRep   = div.querySelector(".post-reply-btn"),
+        repliesC  = div.querySelector(".replies");
+
   replyBtn.onclick = () => replyForm.classList.toggle("hidden");
   postRep.onclick = async () => {
     if (!currentUser) return alert("Login first");
     const txt = replyForm.querySelector("textarea").value.trim();
     if (!txt) return;
-
-    // Ensure no deeper nesting: only top-level replies
-    await addDoc(collection(db,"comments",id,"replies"), {
+    await addDoc(collection(db, "comments", id, "replies"), {
       text: txt,
-      uid:  currentUser.uid,
-      name: currentUser.displayName||"Guest",
+      uid: currentUser.uid,
+      name: currentUser.displayName || "Guest",
+      photoURL: currentUser.photoURL || null,
       created: serverTimestamp()
     });
     replyForm.querySelector("textarea").value = "";
     replyForm.classList.add("hidden");
-    loadReplies(id,repliesC);
+    loadReplies(id, repliesC);
   };
 
-  // Load replies
   loadReplies(id, div.querySelector(".replies"));
-
   commentsDiv.appendChild(div);
 }
 
-// Toggle Reaction (mutually exclusive)
 async function toggleReaction(id, addF, removeF) {
   if (!currentUser) return alert("Login first");
-  const ref = doc(db,"comments",id);
-  const snap= await getDoc(ref);
-  const data= snap.data();
+  const ref = doc(db, "comments", id),
+        snap = await getDoc(ref),
+        data = snap.data();
+
   if (data[removeF]?.includes(currentUser.uid)) {
-    await updateDoc(ref,{ [removeF]: arrayRemove(currentUser.uid) });
+    await updateDoc(ref, { [removeF]: arrayRemove(currentUser.uid) });
   }
-  const has = data[addF]?.includes(currentUser.uid);
-  const op  = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
-  await updateDoc(ref,{ [addF]: op });
+  const has = data[addF]?.includes(currentUser.uid),
+        op  = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
+
+  await updateDoc(ref, { [addF]: op });
   loadComments(true);
 }
 
-// Load nested replies (1 level)
-async function loadReplies(parentId, container) {
-  container.innerHTML = "";
-  const snap = await getDocs(
-    query(collection(db,"comments",parentId,"replies"), orderBy("created","asc"))
-  );
-  snap.forEach(r => {
-    const d = r.data();
-    const el= document.createElement("div");
-    el.className = "bg-gray-50 p-2 rounded mb-1";
-    el.innerHTML = `
-      <div class="flex justify-between">
-        <p class="text-sm font-semibold">${d.name}</p>
-        <p class="text-xs text-gray-500">${d.created?timeAgo(d.created):""}</p>
-      </div>
-      <p class="text-sm ml-4">${d.text}</p>
-    `;
-    container.appendChild(el);
-  });
-}
-
-// Initial fetch
+// Initial load
 loadComments();
-
 </script>
 </body>
 </html>
