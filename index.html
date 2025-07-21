@@ -197,8 +197,8 @@ async function loadComments(reset=false) {
 loadMoreBtn.onclick = () => loadComments();
 
 // Live update on top PAGE_SIZE
-onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),
-           ()=> loadComments(true));
+//onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),
+    //       ()=> loadComments(true));
 
 // — Render Single Comment (with depth & admin delete) —
 function renderComment(id,data) {
