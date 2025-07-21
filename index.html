@@ -31,6 +31,269 @@
         </button>
     </div>
 
-    
+    <!-- Already includes your Firebase config and styling -->
+
+<!-- Changes are only in the <script type="module"> section -->
+
+<!-- Updated SCRIPT ONLY (replace your <script type="module"> block with this) -->
+
+<script type="module">
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signInAnonymously,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  arrayUnion,
+  arrayRemove,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+  authDomain: "ishwar0980-7525b.firebaseapp.com",
+  projectId: "ishwar0980-7525b",
+  storageBucket: "ishwar0980-7525b.appspot.com",
+  messagingSenderId: "522376702284",
+  appId: "1:522376702284:web:433b482f1196c9c23d87e9"
+};
+
+const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const gp = new GoogleAuthProvider();
+
+const loginBtn = document.getElementById("login-main-btn"),
+  registerBtn = document.getElementById("register-main-btn"),
+  logoutBtn = document.getElementById("logout-btn"),
+  userInfo = document.getElementById("user-info"),
+  newCommentEl = document.getElementById("new-comment"),
+  postCommentBtn = document.getElementById("post-comment-btn"),
+  commentsDiv = document.getElementById("comments"),
+  loadMoreBtn = document.getElementById("load-more-btn");
+
+window.closeModal = id => document.getElementById(id).classList.add("hidden");
+const openModal = id => document.getElementById(id).classList.remove("hidden");
+
+loginBtn.onclick = () => openModal("login-modal");
+registerBtn.onclick = () => openModal("register-modal");
+logoutBtn.onclick = () => signOut(auth);
+
+document.getElementById("login-email-btn").onclick = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, document.getElementById("login-email").value, document.getElementById("login-pass").value);
+    closeModal("login-modal");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+document.getElementById("login-google-btn").onclick = async () => {
+  try {
+    await signInWithPopup(auth, gp);
+    closeModal("login-modal");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+document.getElementById("register-email-btn").onclick = async () => {
+  try {
+    await createUserWithEmailAndPassword(auth, document.getElementById("reg-email").value, document.getElementById("reg-pass").value);
+    closeModal("register-modal");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+document.getElementById("register-google-btn").onclick = async () => {
+  try {
+    await signInWithPopup(auth, gp);
+    closeModal("register-modal");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+document.getElementById("register-guest-btn").onclick = async () => {
+  try {
+    await signInAnonymously(auth);
+    closeModal("register-modal");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+let currentUser = null,
+  lastVisible = null;
+const PAGE_SIZE = 10;
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
+  } else {
+    userInfo.textContent = "Not signed in";
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));
+  }
+  loadComments(true);
+});
+
+function timeAgo(ts) {
+  const now = Date.now(),
+    secs = Math.floor((now - ts.toMillis()) / 1000);
+  if (secs < 60) return `${secs}s ago`;
+  const m = Math.floor(secs / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+postCommentBtn.onclick = async () => {
+  if (!currentUser) return alert("Please login first");
+  const txt = newCommentEl.value.trim();
+  if (!txt) return;
+  await addDoc(collection(db, "comments"), {
+    text: txt,
+    uid: currentUser.uid,
+    name: currentUser.displayName || "Guest",
+    photoURL: currentUser.photoURL || null,
+    created: serverTimestamp(),
+    edited: false,
+    likes: [],
+    dislikes: []
+  });
+  newCommentEl.value = "";
+  loadComments(true);
+};
+
+async function loadComments(reset = false) {
+  if (reset) {
+    commentsDiv.innerHTML = "";
+    lastVisible = null;
+  }
+  let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
+  if (lastVisible) q = query(collection(db, "comments"), orderBy("created", "desc"), startAfter(lastVisible), limit(PAGE_SIZE));
+  const snap = await getDocs(q);
+  if (!snap.empty) {
+    lastVisible = snap.docs[snap.docs.length - 1];
+    snap.docs.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
+  }
+  loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
+}
+
+loadMoreBtn.onclick = () => loadComments();
+
+async function renderComment(id, data) {
+  const isOwner = currentUser?.uid === data.uid;
+  const isAdmin = currentUser?.uid === OWNER_UID;
+  const youLiked = currentUser && data.likes.includes(currentUser.uid);
+  const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
+  const avatarURL = data.photoURL || '/default-avatar.png';
+
+  const div = document.createElement("div");
+  div.className = `bg-white p-4 rounded shadow-sm ${data.uid === OWNER_UID ? 'border-2 border-yellow-400' : ''}`;
+  div.innerHTML = `
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="${avatarURL}" class="w-8 h-8 rounded-full ${data.uid === OWNER_UID ? 'ring-2 ring-yellow-400' : ''}" />
+        <p class="font-semibold ${data.uid === OWNER_UID ? 'text-yellow-600' : ''}">${data.name}${data.uid === OWNER_UID ? ' ★' : ''}</p>
+      </div>
+      <p class="text-xs text-gray-500">${data.created ? timeAgo(data.created) : ''}${data.edited ? ' • edited' : ''}</p>
+    </div>
+    <p class="my-2">${data.text}</p>
+    <div class="flex items-center text-sm text-gray-600">
+      <button class="mr-2 like-btn ${youLiked ? 'text-blue-600' : ''}">👍 ${data.likes.length}</button>
+      <button class="mr-2 dislike-btn ${youDisliked ? 'text-red-600' : ''}">👎 ${data.dislikes.length}</button>
+      ${isOwner || isAdmin ? '<button class="mr-2 edit-btn">Edit</button><button class="text-red-500 delete-btn">Delete</button>' : ''}
+    </div>
+  `;
+
+  div.querySelector('.like-btn').onclick = async () => {
+    if (!currentUser) return alert("Login first");
+    const ref = doc(db, "comments", id);
+    const snap = await getDoc(ref);
+    const d = snap.data();
+
+    if (d.likes.includes(currentUser.uid)) {
+      await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
+    } else {
+      if (d.dislikes.includes(currentUser.uid)) await updateDoc(ref, { dislikes: arrayRemove(currentUser.uid) });
+      await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
+    }
+
+    const updated = await getDoc(ref);
+    const updatedLikes = updated.data().likes.length;
+    const btn = div.querySelector('.like-btn');
+    btn.textContent = `👍 ${updatedLikes}`;
+    btn.classList.toggle('text-blue-600', updated.data().likes.includes(currentUser.uid));
+  };
+
+  div.querySelector('.dislike-btn').onclick = async () => {
+    if (!currentUser) return alert("Login first");
+    const ref = doc(db, "comments", id);
+    const snap = await getDoc(ref);
+    const d = snap.data();
+
+    if (d.dislikes.includes(currentUser.uid)) {
+      await updateDoc(ref, { dislikes: arrayRemove(currentUser.uid) });
+    } else {
+      if (d.likes.includes(currentUser.uid)) await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
+      await updateDoc(ref, { dislikes: arrayUnion(currentUser.uid) });
+    }
+
+    const updated = await getDoc(ref);
+    const updatedDislikes = updated.data().dislikes.length;
+    const btn = div.querySelector('.dislike-btn');
+    btn.textContent = `👎 ${updatedDislikes}`;
+    btn.classList.toggle('text-red-600', updated.data().dislikes.includes(currentUser.uid));
+  };
+
+  if (isOwner || isAdmin) {
+    div.querySelector('.edit-btn').onclick = async () => {
+      const t = prompt("Edit comment:", data.text);
+      if (t != null) {
+        await updateDoc(doc(db, "comments", id), { text: t, edited: true });
+        loadComments(true);
+      }
+    };
+
+    div.querySelector('.delete-btn').onclick = async () => {
+      if (confirm("Delete this comment?")) {
+        await deleteDoc(doc(db, "comments", id));
+        loadComments(true);
+      }
+    };
+  }
+
+  commentsDiv.appendChild(div);
+}
+</script>
 </body>
 </html>
