@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Comment Section</title>
+  <script type="module">
+    // Firebase SDK import
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // ✅ Replace with your config:
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
+      authDomain: "ishwar0980-7525b.firebaseapp.com",
+      projectId: "ishwar0980-7525b",
+      storageBucket: "ishwar0980-7525b.appspot.com",
+      messagingSenderId: "522376702284",
+      appId: "1:522376702284:web:433b482f1196c9c23d87e9",
+      measurementId: "G-W40FDR738Q"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("user").textContent = `Signed in as: ${user.displayName}`;
+      } else {
+        document.getElementById("user").textContent = "Not signed in";
+      }
+    });
+
+    window.signIn = async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (e) {
+        alert("Sign-in error: " + e.message);
+      }
+    };
+
+    window.postComment = async () => {
+      const text = document.getElementById("comment").value.trim();
+      if (!text || !currentUser) return alert("Sign in and write a comment first.");
+
+      await addDoc(collection(db, "comments"), {
+        text: text,
+        name: currentUser.displayName,
+        uid: currentUser.uid,
+        created: serverTimestamp()
+      });
+
+      document.getElementById("comment").value = "";
+      loadComments();
+    };
+
+    window.loadComments = async () => {
+      const q = query(collection(db, "comments"), orderBy("created", "desc"));
+      const snapshot = await getDocs(q);
+      const container = document.getElementById("comments");
+      container.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const item = document.createElement("div");
+        item.innerHTML = `<p><strong>${data.name}</strong>: ${data.text}</p>`;
+        container.appendChild(item);
+      });
+    };
+
+    window.onload = () => {
+      loadComments();
+    };
+  </script>
+</head>
+<body>
+  <h2>Comment Section</h2>
+  <p id="user">Loading...</p>
+  <button onclick="signIn()">Sign in with Google</button>
+  <br><br>
+  <textarea id="comment" rows="4" cols="50" placeholder="Write a comment..."></textarea><br>
+  <button onclick="postComment()">Post Comment</button>
+
+  <h3>All Comments:</h3>
+  <div id="comments"></div>
+</body>
+</html>
