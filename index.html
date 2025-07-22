@@ -192,7 +192,12 @@ async function loadComments(reset=false) {
   const snap = await getDocs(q);
   loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
   lastVisible = snap.docs[snap.docs.length-1];
-  snap.forEach(d => renderComment(d.id, d.data()));
+  snap.forEach(d => {
+    if (!renderedIds.has(d.id)) {
+      renderedIds.add(d.id);
+      renderComment(d.id, d.data());
+    }
+  });
 }
 loadMoreBtn.onclick = () => loadComments();
 
