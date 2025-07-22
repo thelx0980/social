@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Links & Comments</title>
+  <title>Your Name | Portfolio</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
@@ -14,36 +14,40 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- External CSS (your portfolio styles) -->
+  <!-- Optional custom CSS -->
   <link rel="stylesheet" href="social.css" />
 </head>
 <body class="bg-gray-100 text-gray-900 font-[Inter,sans-serif]">
-  <!-- Dark Mode Toggle -->
-  <div class="toggle p-4">
-    <input type="checkbox" id="darkToggle" />
-    <label for="darkToggle">🌙 Dark Mode</label>
+
+  <!-- 🌙 Dark Mode Toggle -->
+  <div class="p-4 text-right">
+    <label for="darkToggle" class="cursor-pointer">
+      <input type="checkbox" id="darkToggle" class="mr-2" />
+      🌙 Dark Mode
+    </label>
   </div>
 
-  <!-- Portfolio Section -->
+  <!-- 👤 Profile Section -->
   <div class="container max-w-3xl mx-auto p-6 bg-white rounded shadow">
-    <img src="avatar.jpg" alt="Your Name" class="avatar mx-auto w-32 h-32 rounded-full" />
+    <img src="avatar.jpg" alt="Your Name" class="mx-auto w-32 h-32 rounded-full" />
     <h1 class="text-center text-3xl font-semibold mt-4">Your Name</h1>
-    <p class="subtitle text-center text-gray-600">Web Developer & Designer</p>
+    <p class="text-center text-gray-600">Web Developer & Designer</p>
 
-    <ul class="links mt-6 space-y-2 text-center">
-      <li><a href="https://github.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-github"></i> GitHub</a></li>
-      <li><a href="https://twitter.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-twitter"></i> Twitter</a></li>
-      <li><a href="https://t.me/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-telegram"></i> Telegram</a></li>
-      <li><a href="https://youtube.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-youtube"></i> YouTube</a></li>
-      <li><a href="https://facebook.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-facebook"></i> Facebook</a></li>
-      <li><a href="mailto:youremail@example.com" class="text-blue-600"><i class="fas fa-envelope"></i> Email</a></li>
+    <!-- 🔗 Social Links -->
+    <ul class="mt-6 space-y-2 text-center">
+      <li><a href="https://github.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-github mr-2"></i>GitHub</a></li>
+      <li><a href="https://twitter.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-twitter mr-2"></i>Twitter</a></li>
+      <li><a href="https://t.me/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-telegram mr-2"></i>Telegram</a></li>
+      <li><a href="https://youtube.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-youtube mr-2"></i>YouTube</a></li>
+      <li><a href="https://facebook.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
+      <li><a href="mailto:youremail@example.com" class="text-blue-600"><i class="fas fa-envelope mr-2"></i>Email</a></li>
     </ul>
 
-    <!-- Projects Section -->
-    <div class="projects-section mt-10">
+    <!-- 📂 Projects Section -->
+    <div class="mt-10">
       <h2 class="text-xl font-bold mb-4">My Projects</h2>
 
-      <div class="project flex gap-4 mb-6 items-start">
+      <div class="flex gap-4 mb-6 items-start">
         <div class="text-3xl text-indigo-500"><i class="fas fa-robot"></i></div>
         <div>
           <h3 class="text-lg font-semibold">Wroxen</h3>
@@ -52,7 +56,7 @@
         </div>
       </div>
 
-      <div class="project flex gap-4 items-start">
+      <div class="flex gap-4 items-start">
         <div class="text-3xl text-indigo-500"><i class="fas fa-paper-plane"></i></div>
         <div>
           <h3 class="text-lg font-semibold">CNL-Auto-Post-Bot</h3>
@@ -61,34 +65,36 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Comments Section -->
-  <div class="max-w-3xl mx-auto p-6 mt-10 bg-white rounded shadow">
-    <!-- Auth UI -->
-    <div id="auth" class="mb-6">
-      <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
-      <div class="flex gap-2 flex-wrap">
-        <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
-        <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
-        <button id="logout-btn" class="auth-hide hidden px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+    <!-- 💬 Comments Section -->
+    <div class="mt-12">
+      <h2 class="text-xl font-bold mb-4">Comments</h2>
+
+      <!-- Auth UI -->
+      <div id="auth" class="mb-6">
+        <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
+        <div class="flex gap-2 flex-wrap">
+          <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
+          <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
+          <button id="logout-btn" class="auth-hide hidden px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+        </div>
       </div>
-    </div>
 
-    <!-- New Comment -->
-    <div class="mb-6">
-      <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="w-full p-3 border rounded"></textarea>
-      <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">Post Comment</button>
-    </div>
+      <!-- New Comment -->
+      <div class="mb-6">
+        <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="w-full p-3 border rounded"></textarea>
+        <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">Post Comment</button>
+      </div>
 
-    <!-- Comments Display -->
-    <div id="comments" class="space-y-4"></div>
-    <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
-      Load More Comments
-    </button>
+      <!-- Comments Display -->
+      <div id="comments" class="space-y-4"></div>
+      <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
+        Load More Comments
+      </button>
+    </div>
   </div>
 
-  <!-- Login Modal -->
+  <!-- 🔒 Login Modal -->
   <div id="login-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
       <h2 class="text-xl font-semibold">Login</h2>
@@ -100,7 +106,7 @@
     </div>
   </div>
 
-  <!-- Register Modal -->
+  <!-- 📝 Register Modal -->
   <div id="register-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
       <h2 class="text-xl font-semibold">Register</h2>
@@ -124,7 +130,7 @@
       html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
     });
 
-    // Modal closer (can be moved to shared JS)
+    // Close modal utility
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
     }
