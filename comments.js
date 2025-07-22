@@ -86,7 +86,7 @@ const PAGE_SIZE = 10;
 onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
-    userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
+    userInfo.textContent = `Hello, ${user.displayName || "Anonymous"}`;
     document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
     document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
   } else {
@@ -113,7 +113,7 @@ postCommentBtn.onclick = async () => {
     text: txt,
     uid: currentUser.uid,
     name: currentUser.displayName || "Anonymous",
-    photoURL: currentUser.photoURL || "https://github.com/thelx0980/social/blob/main/anonymous.jpeg",
+    photoURL: currentUser.photoURL || "https://raw.githubusercontent.com/thelx0980/social/refs/heads/main/anonymous.jpeg",
     created: serverTimestamp(),
     edited: false,
     likes: [],
