@@ -196,6 +196,23 @@ async function loadComments(reset=false) {
 }
 loadMoreBtn.onclick = () => loadComments();
 
+  // Real-time updates but avoid duplicates
+let renderedIds = new Set();
+
+onSnapshot(
+  query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)),
+  (snap) => {
+    renderedIds.clear(); // reset when snapshot refreshes
+    commentsDiv.innerHTML = ""; // clear old
+    lastVisible = null;
+    snap.forEach(d => {
+      renderedIds.add(d.id);
+      renderComment(d.id, d.data());
+    });
+  }
+);
+  
+
 // — Render Single Comment (with depth & admin delete) —
 function renderComment(id,data) {
   const isOwner    = currentUser && currentUser.uid===data.uid;
