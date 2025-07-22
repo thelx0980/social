@@ -1,10 +1,8 @@
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider,
-  onAuthStateChanged, signInWithPopup,
-  signInAnonymously, createUserWithEmailAndPassword,
-  signInWithEmailAndPassword, signOut
+  getAuth, GoogleAuthProvider, onAuthStateChanged,
+  signInWithPopup, signInAnonymously,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, collection, doc,
@@ -14,7 +12,6 @@ import {
   arrayUnion, arrayRemove, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Initialize
 const firebaseConfig = {
   apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
   authDomain: "ishwar0980-7525b.firebaseapp.com",
@@ -23,7 +20,6 @@ const firebaseConfig = {
   messagingSenderId: "522376702284",
   appId: "1:522376702284:web:433b482f1196c9c23d87e9"
 };
-
 const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
 
 const app = initializeApp(firebaseConfig);
@@ -31,79 +27,84 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const gp = new GoogleAuthProvider();
 
-// DOM Refs
-const loginBtn = document.getElementById("login-main-btn");
-const registerBtn = document.getElementById("register-main-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const userInfo = document.getElementById("user-info");
-const newCommentEl = document.getElementById("new-comment");
-const postCommentBtn = document.getElementById("post-comment-btn");
-const commentsDiv = document.getElementById("comments");
-const loadMoreBtn = document.getElementById("load-more-btn");
+// Elements
+const loginBtn = document.getElementById("login-main-btn"),
+      registerBtn = document.getElementById("register-main-btn"),
+      logoutBtn = document.getElementById("logout-btn"),
+      userInfo = document.getElementById("user-info"),
+      newCommentEl = document.getElementById("new-comment"),
+      postCommentBtn = document.getElementById("post-comment-btn"),
+      commentsDiv = document.getElementById("comments"),
+      loadMoreBtn = document.getElementById("load-more-btn");
 
-// Modal Function
+window.closeModal = id => document.getElementById(id).classList.add("hidden");
 const openModal = id => document.getElementById(id).classList.remove("hidden");
 
-// Auth UI setup
+// Auth button handlers
 loginBtn.onclick = () => openModal("login-modal");
 registerBtn.onclick = () => openModal("register-modal");
 logoutBtn.onclick = () => signOut(auth);
 
-// Login handlers
-document.getElementById("login-email-btn").onclick = () =>
-  signInWithEmailAndPassword(auth,
-    document.getElementById("login-email").value,
-    document.getElementById("login-pass").value
-  ).catch(e => alert(e.message));
+document.getElementById("login-email-btn").onclick = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, document.getElementById("login-email").value, document.getElementById("login-pass").value);
+    closeModal("login-modal");
+  } catch(e) { alert(e.message); }
+};
 
-document.getElementById("login-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e => alert(e.message));
+document.getElementById("login-google-btn").onclick = async () => {
+  try {
+    await signInWithPopup(auth, gp);
+    closeModal("login-modal");
+  } catch(e) { alert(e.message); }
+};
 
-// Register handlers
-document.getElementById("register-email-btn").onclick = () =>
-  createUserWithEmailAndPassword(auth,
-    document.getElementById("reg-email").value,
-    document.getElementById("reg-pass").value
-  ).catch(e => alert(e.message));
+document.getElementById("register-email-btn").onclick = async () => {
+  try {
+    await createUserWithEmailAndPassword(auth, document.getElementById("reg-email").value, document.getElementById("reg-pass").value);
+    closeModal("register-modal");
+  } catch(e) { alert(e.message); }
+};
 
-document.getElementById("register-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e => alert(e.message));
+document.getElementById("register-google-btn").onclick = async () => {
+  try {
+    await signInWithPopup(auth, gp);
+    closeModal("register-modal");
+  } catch(e) { alert(e.message); }
+};
 
-document.getElementById("register-guest-btn").onclick = () =>
-  signInAnonymously(auth).catch(e => alert(e.message));
+document.getElementById("register-guest-btn").onclick = async () => {
+  try {
+    await signInAnonymously(auth);
+    closeModal("register-modal");
+  } catch(e) { alert(e.message); }
+};
 
-// State & Pagination
 let currentUser = null, lastVisible = null;
 const PAGE_SIZE = 10;
 
-// Auth State Listener
 onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
     userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
     document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
     document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
-    closeModal("login-modal");
-    closeModal("register-modal");
   } else {
     userInfo.textContent = "Not signed in";
     document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));
     document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));
   }
+  loadComments(true); // Refresh comments on auth change
 });
 
-// Utility: time ago
 function timeAgo(ts) {
   const now = Date.now(), secs = Math.floor((now - ts.toMillis()) / 1000);
   if (secs < 60) return `${secs}s ago`;
-  const m = Math.floor(secs / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  const m = Math.floor(secs / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
 }
 
-// Post Comment
 postCommentBtn.onclick = async () => {
   if (!currentUser) return alert("Please login first");
   const txt = newCommentEl.value.trim();
@@ -112,13 +113,34 @@ postCommentBtn.onclick = async () => {
     text: txt,
     uid: currentUser.uid,
     name: currentUser.displayName || "Guest",
+    photoURL: currentUser.photoURL || null,
     created: serverTimestamp(),
     edited: false,
-    likes: [], dislikes: []
+    likes: [],
+    dislikes: []
   });
   newCommentEl.value = "";
   loadComments(true);
 };
+
+async function loadComments(reset = false) {
+  if (reset) {
+    commentsDiv.innerHTML = "";
+    lastVisible = null;
+  }
+  let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
+  if (lastVisible) q = query(collection(db, "comments"), orderBy("created", "desc"), startAfter(lastVisible), limit(PAGE_SIZE));
+  const snap = await getDocs(q);
+  if (!snap.empty) {
+    lastVisible = snap.docs[snap.docs.length - 1];
+    snap.docs.forEach(docSnap => renderComment(docSnap.id, docSnap.data()));
+  }
+  loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
+}
+
+loadMoreBtn.onclick = () => loadComments();
+
+onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), () => loadComments(true));
 
 async function loadReplies(parentId, container, reset = false) {
   if (reset) container.innerHTML = "";
@@ -156,8 +178,6 @@ function renderReply({ id, name, text, created, photoURL, uid }, container) {
   container.appendChild(el);
 }
 
-
-// Load & Render Comments
 function renderComment(id, data) {
   const isOwner = currentUser?.uid === data.uid;
   const isAdmin = currentUser?.uid === OWNER_UID;
