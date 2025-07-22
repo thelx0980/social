@@ -171,33 +171,89 @@ loadMoreBtn.onclick = () => loadComments();
 
 // Render Single Comment
 function renderComment(id, data) {
-  const isOwner = currentUser && currentUser.uid === data.uid;
-  const youLiked = currentUser && data.likes.includes(currentUser.uid);
-  const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
+  // Ensure required variables are defined
+  if (!currentUser || !OWNER_UID) {
+    console.warn("currentUser or OWNER_UID is not defined");
+  }
+
+  // Validate and set defaults for data
+  const safeData = {
+    uid: data.uid || "",
+    name: data.name || "Anonymous",
+    text: data.text || "",
+    created: data.created || null,
+    edited: data.edited || false,
+    likes: Array.isArray(data.likes) ? data.likes : [],
+    dislikes: Array.isArray(data.dislikes) ? data.dislikes : [],
+  };
+
+  const isOwner = currentUser && safeData.uid && currentUser.uid === safeData.uid;
+  const isAdmin = currentUser && currentUser.uid === OWNER_UID;
+  const youLiked = currentUser && safeData.likes.includes(currentUser.uid);
+  const youDisliked = currentUser && safeData.dislikes.includes(currentUser.uid);
 
   const div = document.createElement("div");
   div.className = "bg-white p-4 rounded shadow-sm";
-  div.innerHTML = `
-    <div class="flex justify-between">
-      <p class="font-semibold">${data.name}</p>
-      <p class="text-xs text-gray-500">
-        ${data.created ? timeAgo(data.created) : ""}${data.edited ? " • edited" : ""}
-      </p>
-    </div>
-    <p class="my-2">${data.text}</p>
-    <div class="flex items-center gap-4 text-sm">
-      <button class="like-btn flex items-center gap-1 ${youLiked ? 'text-blue-600' : ''}">
-        👍 <span>${data.likes.length}</span>
-      </button>
-      <button class="dislike-btn flex items-center gap-1 ${youDisliked ? 'text-red-600' : ''}">
-        👎 <span>${data.dislikes.length}</span>
-      </button>
-      <button class="reply-btn">Reply</button>
-      ${isOwner
-        ? `<button class="edit-btn">Edit</button>
-           <button class="delete-btn text-red-500">Delete</button>`
-        : ''}
-    </div>
+  div.dataset.id = id; // Add comment ID for event handling
+
+  // Build DOM elements safely
+  const headerDiv = document.createElement("div");
+  headerDiv.className = "flex justify-between";
+  
+  const namePara = document.createElement("p");
+  namePara.className = "font-semibold";
+  namePara.textContent = safeData.name;
+  headerDiv.appendChild(namePara);
+
+  const timePara = document.createElement("p");
+  timePara.className = "text-xs text-gray-500";
+  timePara.textContent = safeData.created && typeof timeAgo === "function" 
+    ? `${timeAgo(safeData.created)}${safeData.edited ? " • edited" : ""}`
+    : "Unknown time";
+  headerDiv.appendChild(timePara);
+
+  const textPara = document.createElement("p");
+  textPara.className = "my-2";
+  textPara.textContent = safeData.text;
+  
+  const actionsDiv = document.createElement("div");
+  actionsDiv.className = "flex items-center gap-4 text-sm";
+
+  const likeBtn = document.createElement("button");
+  likeBtn.className = `like-btn flex items-center gap-1 ${youLiked ? "text-blue-600" : ""}`;
+  likeBtn.setAttribute("aria-label", "Like comment");
+  likeBtn.innerHTML = `👍 <span>${safeData.likes.length}</span>`;
+  actionsDiv.appendChild(likeBtn);
+
+  const dislikeBtn = document.createElement("button");
+  dislikeBtn.className = `dislike-btn flex items-center gap-1 ${youDisliked ? "text-red-600" : ""}`;
+  dislikeBtn.setAttribute("aria-label", "Dislike comment");
+  dislikeBtn.innerHTML = `👎 <span>${safeData.dislikes.length}</span>`;
+  actionsDiv.appendChild(dislikeBtn);
+
+  const replyBtn = document.createElement("button");
+  replyBtn.className = "reply-btn";
+  replyBtn.textContent = "Reply";
+  actionsDiv.appendChild(replyBtn);
+
+  if (isOwner || isAdmin) {
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.textContent = "Edit";
+    actionsDiv.appendChild(editBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn text-red-500";
+    deleteBtn.textContent = "Delete";
+    actionsDiv.appendChild(deleteBtn);
+  }
+
+  div.appendChild(headerDiv);
+  div.appendChild(textPara);
+  div.appendChild(actionsDiv);
+
+  return div;
+}
     <div class="ml-6 mt-2 reply-form hidden">
       <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
       <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
