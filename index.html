@@ -1,110 +1,136 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Portfolio with Comments</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script defer type="module" src="comments.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name | Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="toggle">
-    <label for="theme-toggle">Toggle Theme</label>
-    <input type="checkbox" id="theme-toggle" onchange="document.documentElement.setAttribute('data-theme', this.checked ? 'dark' : 'light')" />
+<body class="bg-gray-100 text-gray-900 font-[Inter,sans-serif]">
+
+  <!-- 🌙 Dark Mode Toggle -->
+  <div class="p-4 text-right">
+    <label for="darkToggle" class="cursor-pointer">
+      <input type="checkbox" id="darkToggle" class="mr-2" />
+      🌙 Dark Mode
+    </label>
   </div>
 
-  <div class="container">
+  <!-- 👤 Profile + Projects Section (Single Column Layout) -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white rounded shadow">
     <!-- Avatar & Info -->
-    <img class="avatar" src="https://avatars.githubusercontent.com/u/99132890?v=4" alt="Avatar" />
-    <h1>Ishwar Kumar</h1>
-    <p class="subtitle">Full Stack Developer</p>
+    <div class="text-center">
+      <img src="avatar.jpg" alt="Your Name" class="mx-auto w-32 h-32 rounded-full" />
+      <h1 class="text-3xl font-semibold mt-4">Your Name</h1>
+      <p class="text-gray-600">Web Developer & Designer</p>
+    </div>
 
-    <!-- Links -->
-    <ul class="links auth-show">
-      <li><button id="login-main-btn">Login</button></li>
-      <li><button id="register-main-btn">Register</button></li>
-    </ul>
-    <ul class="links auth-hide hidden">
-      <li><button id="logout-btn">Logout</button></li>
-      <li><span id="user-info">Not signed in</span></li>
+    <!-- Social Links -->
+    <ul class="mt-6 space-y-2 text-center">
+      <li><a href="#" class="text-blue-600"><i class="fab fa-github mr-2"></i>GitHub</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-twitter mr-2"></i>Twitter</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-telegram mr-2"></i>Telegram</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-youtube mr-2"></i>YouTube</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
+      <li><a href="mailto:youremail@example.com" class="text-blue-600"><i class="fas fa-envelope mr-2"></i>Email</a></li>
     </ul>
 
-    <!-- Projects Section -->
-    <section class="projects-section">
-      <h2>My Projects</h2>
-      <div class="project">
-        <span class="project-icon">💻</span>
-        <div class="project-content">
-          <h3>Portfolio Website</h3>
-          <p>Responsive site built with HTML, CSS & Firebase.</p>
-          <a href="#">View</a>
+    <!-- Projects -->
+    <div class="mt-10">
+      <h2 class="text-xl font-bold mb-4">My Projects</h2>
+
+      <div class="flex gap-4 mb-6 items-start">
+        <div class="text-3xl text-indigo-500"><i class="fas fa-robot"></i></div>
+        <div>
+          <h3 class="text-lg font-semibold">Wroxen</h3>
+          <p class="text-gray-600">Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
+          <a href="https://github.com/0AIB/wroxen" target="_blank" class="text-blue-600">View on GitHub</a>
         </div>
       </div>
-    </section>
 
-    <!-- Comments Section -->
-    <section class="projects-section">
-      <h2>Comments</h2>
-      <textarea id="new-comment" placeholder="Write a comment..." rows="3" class="w-full border rounded p-2 mb-2"></textarea>
-      <button id="post-comment-btn" class="bg-blue-500 text-white py-1 px-4 rounded mb-4">Post</button>
+      <div class="flex gap-4 items-start">
+        <div class="text-3xl text-indigo-500"><i class="fas fa-paper-plane"></i></div>
+        <div>
+          <h3 class="text-lg font-semibold">CNL-Auto-Post-Bot</h3>
+          <p class="text-gray-600">CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
+          <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank" class="text-blue-600">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Comment Section RIGHT AFTER Projects -->
+    <div class="mt-12">
+      <h2 class="text-xl font-bold mb-4">Comments</h2>
+
+      <!-- Auth UI -->
+      <div id="auth" class="mb-6">
+        <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
+        <div class="flex gap-2 flex-wrap">
+          <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
+          <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
+          <button id="logout-btn" class="auth-hide hidden px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+        </div>
+      </div>
+
+      <!-- New Comment -->
+      <div class="mb-6">
+        <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="w-full p-3 border rounded"></textarea>
+        <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">Post Comment</button>
+      </div>
+
+      <!-- Comments Display -->
       <div id="comments" class="space-y-4"></div>
-      <button id="load-more-btn" class="bg-gray-300 px-4 py-2 rounded mt-4 hidden">Load More</button>
-    </section>
-  </div>
-
-  <!-- Login Modal -->
-  <div id="login-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Login</h2>
-      <input type="email" id="login-email" placeholder="Email" />
-      <input type="password" id="login-pass" placeholder="Password" />
-      <button id="login-email-btn">Login</button>
-      <button id="login-google-btn">Login with Google</button>
-      <button onclick="closeModal('login-modal')">Close</button>
+      <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
+        Load More Comments
+      </button>
     </div>
   </div>
 
-  <!-- Register Modal -->
-  <div id="register-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Register</h2>
-      <input type="email" id="reg-email" placeholder="Email" />
-      <input type="password" id="reg-pass" placeholder="Password" />
-      <button id="register-email-btn">Register</button>
-      <button id="register-google-btn">Google</button>
-      <button id="register-guest-btn">Continue as Guest</button>
-      <button onclick="closeModal('register-modal')">Close</button>
+  <!-- 🔒 Login Modal -->
+  <div id="login-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
+      <h2 class="text-xl font-semibold">Login</h2>
+      <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
+      <input id="login-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+      <button id="login-email-btn" class="w-full px-4 py-2 bg-green-600 text-white rounded">Login with Email</button>
+      <button id="login-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Login with Google</button>
+      <button onclick="closeModal('login-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
     </div>
   </div>
 
-  <style>
-    .hidden { display: none; }
-    .modal {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex; align-items: center; justify-content: center;
+  <!-- 📝 Register Modal -->
+  <div id="register-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
+      <h2 class="text-xl font-semibold">Register</h2>
+      <input id="reg-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
+      <input id="reg-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+      <button id="register-email-btn" class="w-full px-4 py-2 bg-yellow-600 text-white rounded">Register with Email</button>
+      <button id="register-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Register with Google</button>
+      <button id="register-guest-btn" class="w-full px-4 py-2 bg-gray-600 text-white rounded">Continue as Guest</button>
+      <button onclick="closeModal('register-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
+    </div>
+  </div>
+
+  <!-- 🧠 Scripts -->
+  <script type="module" src="comments.js"></script>
+  <script>
+    const toggle = document.getElementById('darkToggle');
+    const html = document.documentElement;
+    toggle.addEventListener('change', () => {
+      html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
+    });
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
     }
-    .modal-content {
-      background: var(--container);
-      padding: 2rem;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    input[type="email"],
-    input[type="password"] {
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-    }
-    button {
-      cursor: pointer;
-    }
-  </style>
+  </script>
 </body>
 </html>
