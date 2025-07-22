@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Comments with Depth Control & Admin Delete</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -41,9 +41,9 @@
   <div class="bg-white rounded-lg p-6 w-80">
     <h2 class="text-lg font-semibold mb-4">Login</h2>
     <input id="login-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
-    <input id="login-pass"  type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
-    <button id="login-email-btn"  class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-    <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600  text-white rounded">Google</button>
+    <input id="login-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
+    <button id="login-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
+    <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
     <button onclick="closeModal('login-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
   </div>
 </div>
@@ -53,10 +53,10 @@
   <div class="bg-white rounded-lg p-6 w-80">
     <h2 class="text-lg font-semibold mb-4">Register</h2>
     <input id="reg-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
-    <input id="reg-pass"  type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
+    <input id="reg-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
     <button id="register-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-    <button id="register-google-btn"class="w-full mb-2 px-4 py-2 bg-blue-600  text-white rounded">Google</button>
-    <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600  text-white rounded">Guest</button>
+    <button id="register-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
+    <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
     <button onclick="closeModal('register-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
   </div>
 </div>
@@ -80,14 +80,14 @@ import {
 
 // — Initialize —
 const firebaseConfig = {
-  apiKey: "AIzaSyCAVF_QueVUEGojKuB3vKH8L39wMZocJ24",
-  authDomain: "ishwar0980-7525b.firebaseapp.com",
-  projectId: "ishwar0980-7525b",
-  storageBucket: "ishwar0980-7525b.appspot.com",
-  messagingSenderId: "522376702284",
-  appId: "1:522376702284:web:433b482f1196c9c23d87e9"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
-const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
+const OWNER_UID = "YOUR_ADMIN_UID"; // Replace with your admin UID
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
@@ -130,7 +130,7 @@ document.getElementById("register-email-btn").onclick = () =>
     document.getElementById("reg-pass").value
   ).catch(e => alert(e.message));
 
-document.get NERegister-google-btn").onclick = () =>
+document.getElementById("register-google-btn").onclick = () =>
   signInWithPopup(auth, gp).catch(e => alert(e.message));
 
 document.getElementById("register-guest-btn").onclick = () =>
