@@ -118,53 +118,53 @@ document.getElementById("login-email-btn").onclick = () =>
   signInWithEmailAndPassword(auth,
     document.getElementById("login-email").value,
     document.getElementById("login-pass").value
-  ).catch(e=>alert(e.message));
+  ).catch(e => alert(e.message));
 
 document.getElementById("login-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e=>alert(e.message));
+  signInWithPopup(auth, gp).catch(e => alert(e.message));
 
 // Register handlers
 document.getElementById("register-email-btn").onclick = () =>
   createUserWithEmailAndPassword(auth,
     document.getElementById("reg-email").value,
     document.getElementById("reg-pass").value
-  ).catch(e=>alert(e.message));
+  ).catch(e => alert(e.message));
 
-document.getElementById("register-google-btn").onclick = () =>
-  signInWithPopup(auth, gp).catch(e=>alert(e.message));
+document.get NERegister-google-btn").onclick = () =>
+  signInWithPopup(auth, gp).catch(e => alert(e.message));
 
 document.getElementById("register-guest-btn").onclick = () =>
-  signInAnonymously(auth).catch(e=>alert(e.message));
+  signInAnonymously(auth).catch(e => alert(e.message));
 
 // — State & Pagination —
-let currentUser = null, lastVisible = null;
+let currentUser = null, lastVisible = null, totalComments = 0;
 const PAGE_SIZE = 10;
 
 // — Auth State Listener —
 onAuthStateChanged(auth, user => {
   currentUser = user;
   if (user) {
-    userInfo.textContent = `Hello, ${user.displayName||"Guest"}`;
-    document.querySelectorAll(".auth-show").forEach(el=>el.classList.add("hidden"));
-    document.querySelectorAll(".auth-hide").forEach(el=>el.classList.remove("hidden"));
+    userInfo.textContent = `Hello, ${user.displayName || "Guest"}`;
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.remove("hidden"));
     closeModal("login-modal");
     closeModal("register-modal");
   } else {
     userInfo.textContent = "Not signed in";
-    document.querySelectorAll(".auth-show").forEach(el=>el.classList.remove("hidden"));
-    document.querySelectorAll(".auth-hide").forEach(el=>el.classList.add("hidden"));
+    document.querySelectorAll(".auth-show").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".auth-hide").forEach(el => el.classList.add("hidden"));
   }
 });
 
 // — Utility: time ago —
 function timeAgo(ts) {
-  const now = Date.now(), secs = Math.floor((now - ts.toMillis())/1000);
-  if (secs<60) return `${secs}s ago`;
-  const m = Math.floor(secs/60);
-  if (m<60) return `${m}m ago`;
-  const h = Math.floor(m/60);
-  if (h<24) return `${h}h ago`;
-  return `${Math.floor(h/24)}d ago`;
+  const now = Date.now(), secs = Math.floor((now - ts.toMillis()) / 1000);
+  if (secs < 60) return `${secs}s ago`;
+  const m = Math.floor(secs / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
 }
 
 // — Post Comment —
@@ -172,23 +172,25 @@ postCommentBtn.onclick = async () => {
   if (!currentUser) return alert("Please login first");
   const txt = newCommentEl.value.trim();
   if (!txt) return;
-  await addDoc(collection(db,"comments"), {
-    text: txt,
-    uid:  currentUser.uid,
-    name: currentUser.displayName||"Guest",
-    created: serverTimestamp(),
-    edited: false,
-    likes:  [], dislikes: []
-  });
-  newCommentEl.value = "";
-  loadComments(true);
+  try {
+    await addDoc(collection(db, "comments"), {
+      text: txt,
+      uid: currentUser.uid,
+      name: currentUser.displayName || "Guest",
+      created: serverTimestamp(),
+      edited: false,
+      likes: [],
+      dislikes: []
+    });
+    newCommentEl.value = "";
+    loadComments(true);
+  } catch (e) {
+    console.error("Error posting comment:", e.message);
+    alert("Failed to post comment: " + e.message);
+  }
 };
 
 // — Load & Render Comments —
-let currentUser = null, lastVisible = null, totalComments = 0;
-const PAGE_SIZE = 10;
-
-// Load & Render Comments
 async function loadComments(reset = false) {
   try {
     if (reset) {
@@ -229,39 +231,26 @@ loadMoreBtn.onclick = () => loadComments(false);
 // Live update for new comments without resetting pagination
 onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), 
   async (snap) => {
-    // Only reload if new comments were added
     if (snap.docChanges().some(change => change.type === "added")) {
-      // Update total count
       const countSnap = await getDocs(query(collection(db, "comments")));
       totalComments = countSnap.size;
-      
-      // Only reset if we're on the first page
       if (!lastVisible) {
         loadComments(true);
       }
     }
   });
 
-// Initial fetch
-loadComments(true);
-  
-loadMoreBtn.onclick = () => loadComments();
-
-// Live update on top PAGE_SIZE
-onSnapshot(query(collection(db,"comments"),orderBy("created","desc"),limit(PAGE_SIZE)),
-           ()=> loadComments(true));
-
 // — Render Single Comment (with depth & admin delete) —
-function renderComment(id,data) {
-  const isOwner    = currentUser && currentUser.uid===data.uid;
-  const isAdmin    = currentUser && currentUser.uid===OWNER_UID;
-  const youLiked   = currentUser && data.likes.includes(currentUser.uid);
-  const youDisliked= currentUser && data.dislikes.includes(currentUser.uid);
+function renderComment(id, data) {
+  const isOwner = currentUser && currentUser.uid === data.uid;
+  const isAdmin = currentUser && currentUser.uid === OWNER_UID;
+  const youLiked = currentUser && data.likes.includes(currentUser.uid);
+  const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
 
   // Build action buttons
   let actions = `
-    <button class="like-btn mr-2 ${youLiked?'text-blue-600':''}">👍 ${data.likes.length}</button>
-    <button class="dislike-btn mr-2 ${youDisliked?'text-red-600':''}">👎 ${data.dislikes.length}</button>
+    <button class="like-btn mr-2 ${youLiked ? 'text-blue-600' : ''}">👍 ${data.likes.length}</button>
+    <button class="dislike-btn mr-2 ${youDisliked ? 'text-red-600' : ''}">👎 ${data.dislikes.length}</button>
     <button class="reply-btn mr-2">Reply</button>
   `;
   if (isOwner || isAdmin) {
@@ -275,7 +264,7 @@ function renderComment(id,data) {
     <div class="flex justify-between">
       <p class="font-semibold">${data.name}</p>
       <p class="text-xs text-gray-500">
-        ${data.created?timeAgo(data.created):""}${data.edited?" • edited":""}
+        ${data.created ? timeAgo(data.created) : ""}${data.edited ? " • edited" : ""}
       </p>
     </div>
     <p class="my-2">${data.text}</p>
@@ -288,15 +277,20 @@ function renderComment(id,data) {
   `;
 
   // Like / Dislike toggle
-  div.querySelector(".like-btn").onclick    = () => toggleReaction(id,"likes","dislikes");
-  div.querySelector(".dislike-btn").onclick = () => toggleReaction(id,"dislikes","likes");
+  div.querySelector(".like-btn").onclick = () => toggleReaction(id, "likes", "dislikes");
+  div.querySelector(".dislike-btn").onclick = () => toggleReaction(id, "dislikes", "likes");
 
   // Delete
   const delBtn = div.querySelector(".delete-btn");
   if (delBtn) delBtn.onclick = async () => {
     if (confirm("Delete this comment?")) {
-      await deleteDoc(doc(db,"comments",id));
-      loadComments(true);
+      try {
+        await deleteDoc(doc(db, "comments", id));
+        loadComments(true);
+      } catch (e) {
+        console.error("Error deleting comment:", e.message);
+        alert("Failed to delete comment: " + e.message);
+      }
     }
   };
 
@@ -304,79 +298,97 @@ function renderComment(id,data) {
   const editBtn = div.querySelector(".edit-btn");
   if (editBtn) editBtn.onclick = async () => {
     const t = prompt("Edit comment:", data.text);
-    if (t!=null) {
-      await updateDoc(doc(db,"comments",id),{ text:t, edited:true });
-      loadComments(true);
+    if (t != null) {
+      try {
+        await updateDoc(doc(db, "comments", id), { text: t, edited: true });
+        loadComments(true);
+      } catch (e) {
+        console.error("Error editing comment:", e.message);
+        alert("Failed to edit comment: " + e.message);
+      }
     }
   };
 
   // Reply (only one-level)
   const replyBtn = div.querySelector(".reply-btn");
-  const replyForm= div.querySelector(".reply-form");
-  const postRep  = div.querySelector(".post-reply-btn");
+  const replyForm = div.querySelector(".reply-form");
+  const postRep = div.querySelector(".post-reply-btn");
   const repliesC = div.querySelector(".replies");
   replyBtn.onclick = () => replyForm.classList.toggle("hidden");
   postRep.onclick = async () => {
     if (!currentUser) return alert("Login first");
     const txt = replyForm.querySelector("textarea").value.trim();
     if (!txt) return;
-
-    // Ensure no deeper nesting: only top-level replies
-    await addDoc(collection(db,"comments",id,"replies"), {
-      text: txt,
-      uid:  currentUser.uid,
-      name: currentUser.displayName||"Guest",
-      created: serverTimestamp()
-    });
-    replyForm.querySelector("textarea").value = "";
-    replyForm.classList.add("hidden");
-    loadReplies(id,repliesC);
+    try {
+      await addDoc(collection(db, "comments", id, "replies"), {
+        text: txt,
+        uid: currentUser.uid,
+        name: currentUser.displayName || "Guest",
+        created: serverTimestamp()
+      });
+      replyForm.querySelector("textarea").value = "";
+      replyForm.classList.add("hidden");
+      loadReplies(id, repliesC);
+    } catch (e) {
+      console.error("Error posting reply:", e.message);
+      alert("Failed to post reply: " + e.message);
+    }
   };
 
   // Load replies
-  loadReplies(id, div.querySelector(".replies"));
+  loadReplies(id, repliesC);
 
   commentsDiv.appendChild(div);
 }
 
-// Toggle Reaction (mutually exclusive)
+// — Toggle Reaction (mutually exclusive) —
 async function toggleReaction(id, addF, removeF) {
   if (!currentUser) return alert("Login first");
-  const ref = doc(db,"comments",id);
-  const snap= await getDoc(ref);
-  const data= snap.data();
-  if (data[removeF]?.includes(currentUser.uid)) {
-    await updateDoc(ref,{ [removeF]: arrayRemove(currentUser.uid) });
+  try {
+    const ref = doc(db, "comments", id);
+    const snap = await getDoc(ref);
+    const data = snap.data();
+    if (data[removeF]?.includes(currentUser.uid)) {
+      await updateDoc(ref, { [removeF]: arrayRemove(currentUser.uid) });
+    }
+    const has = data[addF]?.includes(currentUser.uid);
+    const op = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
+    await updateDoc(ref, { [addF]: op });
+    loadComments(true);
+  } catch (e) {
+    console.error("Error toggling reaction:", e.message);
+    alert("Failed to toggle reaction: " + e.message);
   }
-  const has = data[addF]?.includes(currentUser.uid);
-  const op  = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
-  await updateDoc(ref,{ [addF]: op });
-  loadComments(true);
 }
 
-// Load nested replies (1 level)
+// — Load nested replies (1 level) —
 async function loadReplies(parentId, container) {
-  container.innerHTML = "";
-  const snap = await getDocs(
-    query(collection(db,"comments",parentId,"replies"), orderBy("created","asc"))
-  );
-  snap.forEach(r => {
-    const d = r.data();
-    const el= document.createElement("div");
-    el.className = "bg-gray-50 p-2 rounded mb-1";
-    el.innerHTML = `
-      <div class="flex justify-between">
-        <p class="text-sm font-semibold">${d.name}</p>
-        <p class="text-xs text-gray-500">${d.created?timeAgo(d.created):""}</p>
-      </div>
-      <p class="text-sm ml-4">${d.text}</p>
-    `;
-    container.appendChild(el);
-  });
+  try {
+    container.innerHTML = "";
+    const snap = await getDocs(
+      query(collection(db, "comments", parentId, "replies"), orderBy("created", "asc"))
+    );
+    snap.forEach(r => {
+      const d = r.data();
+      const el = document.createElement("div");
+      el.className = "bg-gray-50 p-2 rounded mb-1";
+      el.innerHTML = `
+        <div class="flex justify-between">
+          <p class="text-sm font-semibold">${d.name}</p>
+          <p class="text-xs text-gray-500">${d.created ? timeAgo(d.created) : ""}</p>
+        </div>
+        <p class="text-sm ml-4">${d.text}</p>
+      `;
+      container.appendChild(el);
+    });
+  } catch (e) {
+    console.error("Error loading replies:", e.message);
+    alert("Failed to load replies: " + e.message);
+  }
 }
 
 // Initial fetch
-loadComments();
+loadComments(true);
 
 </script>
 </body>
