@@ -112,8 +112,8 @@ postCommentBtn.onclick = async () => {
   await addDoc(collection(db, "comments"), {
     text: txt,
     uid: currentUser.uid,
-    name: currentUser.displayName || "Guest",
-    photoURL: currentUser.photoURL || null,
+    name: currentUser.displayName,
+    photoURL: currentUser.photoURL,
     created: serverTimestamp(),
     edited: false,
     likes: [],
