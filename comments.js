@@ -23,6 +23,9 @@ const firebaseConfig = {
   messagingSenderId: "522376702284",
   appId: "1:522376702284:web:433b482f1196c9c23d87e9"
 };
+
+const OWNER_UID = "LMRHGwdCUeRRJRQnOyPNFwDMtK92";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -116,6 +119,43 @@ postCommentBtn.onclick = async () => {
   newCommentEl.value = "";
   loadComments(true);
 };
+
+async function loadReplies(parentId, container, reset = false) {
+  if (reset) container.innerHTML = "";
+  const snap = await getDocs(query(collection(db, "comments", parentId, "replies"), orderBy("created", "asc")));
+  const replies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  replies.slice(0, 5).forEach(r => renderReply(r, container));
+  if (replies.length > 5) {
+    const btn = document.createElement("button");
+    btn.textContent = `Show ${replies.length - 5} more replies`;
+    btn.className = "text-sm text-blue-500 ml-6";
+    btn.onclick = () => {
+      replies.slice(5).forEach(r => renderReply(r, container));
+      btn.remove();
+    };
+    container.appendChild(btn);
+  }
+}
+
+function renderReply({ id, name, text, created, photoURL, uid }, container) {
+  const isAdmin = uid === OWNER_UID;
+  const avatar = photoURL || '/default-avatar.png';
+  const el = document.createElement("div");
+  el.className = "bg-gray-50 p-2 rounded mb-1 flex items-start gap-2";
+  el.innerHTML = `
+    <img src="${avatar}" class="w-6 h-6 rounded-full ${isAdmin ? 'ring-2 ring-yellow-400' : ''}" alt="${name}" />
+    <div class="flex-1">
+      <div class="flex justify-between">
+        <p class="text-sm font-semibold ${isAdmin ? 'text-yellow-600' : ''}">
+          ${name}${isAdmin ? ' ★' : ''}
+        </p>
+        <p class="text-xs text-gray-500">${created ? timeAgo(created) : ''}</p>
+      </div>
+      <p class="text-sm ml-1">${text}</p>
+    </div>`;
+  container.appendChild(el);
+}
+
 
 // Load & Render Comments
 async function loadComments(reset = false) {
