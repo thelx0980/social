@@ -185,15 +185,66 @@ postCommentBtn.onclick = async () => {
 };
 
 // — Load & Render Comments —
-async function loadComments(reset=false) {
-  if (reset) { commentsDiv.innerHTML=""; lastVisible=null; }
-  let q = query(collection(db,"comments"), orderBy("created","desc"), limit(PAGE_SIZE));
-  if (lastVisible) q = query(q, startAfter(lastVisible));
-  const snap = await getDocs(q);
-  loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
-  lastVisible = snap.docs[snap.docs.length-1];
-  snap.forEach(d => renderComment(d.id, d.data()));
+let currentUser = null, lastVisible = null, totalComments = 0;
+const PAGE_SIZE = 10;
+
+// Load & Render Comments
+async function loadComments(reset = false) {
+  try {
+    if (reset) {
+      commentsDiv.innerHTML = "";
+      lastVisible = null;
+    }
+
+    // Fetch comments
+    let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
+    if (lastVisible && !reset) {
+      q = query(q, startAfter(lastVisible));
+    }
+    const snap = await getDocs(q);
+
+    // Update total comments count (only on reset)
+    if (reset) {
+      const countSnap = await getDocs(query(collection(db, "comments")));
+      totalComments = countSnap.size;
+    }
+
+    // Update lastVisible and render comments
+    if (snap.docs.length > 0) {
+      lastVisible = snap.docs[snap.docs.length - 1];
+      snap.forEach(d => renderComment(d.id, d.data()));
+    }
+
+    // Show "Load More" button only if there are more comments to load
+    loadMoreBtn.classList.toggle("hidden", totalComments <= commentsDiv.children.length);
+  } catch (e) {
+    console.error("Error loading comments:", e.message);
+    alert("Failed to load comments: " + e.message);
+  }
 }
+
+// Load More button handler
+loadMoreBtn.onclick = () => loadComments(false);
+
+// Live update for new comments without resetting pagination
+onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), 
+  async (snap) => {
+    // Only reload if new comments were added
+    if (snap.docChanges().some(change => change.type === "added")) {
+      // Update total count
+      const countSnap = await getDocs(query(collection(db, "comments")));
+      totalComments = countSnap.size;
+      
+      // Only reset if we're on the first page
+      if (!lastVisible) {
+        loadComments(true);
+      }
+    }
+  });
+
+// Initial fetch
+loadComments(true);
+  
 loadMoreBtn.onclick = () => loadComments();
 
 // Live update on top PAGE_SIZE
