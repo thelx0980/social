@@ -140,7 +140,7 @@ async function loadComments(reset = false) {
 
 loadMoreBtn.onclick = () => loadComments();
 
-onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), () => loadComments(true));
+// onSnapshot(query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE)), () => loadComments(true));
 
 async function loadReplies(parentId, container, reset = false) {
   if (reset) container.innerHTML = "";
