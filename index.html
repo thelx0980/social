@@ -1,310 +1,110 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <style>
-    :root {
-      --bg-light: #f0f2f5;
-      --container-light: #fff;
-      --text-light: #333;
-      --subtext-light: #666;
-      --project-bg-light: #e3e9f5;--bg-dark: #1e1e1e;
-  --container-dark: #2c2c2c;
-  --text-dark: #f9f9f9;
-  --subtext-dark: #bbb;
-  --project-bg-dark: #333945;
-
-  --primary: #0073e6;
-  --primary-dark: #005bb5;
-}
-
-[data-theme="dark"] {
-  --bg: var(--bg-dark);
-  --container: var(--container-dark);
-  --text: var(--text-dark);
-  --subtext: var(--subtext-dark);
-  --project-bg: var(--project-bg-dark);
-}
-
-[data-theme="light"] {
-  --bg: var(--bg-light);
-  --container: var(--container-light);
-  --text: var(--text-light);
-  --subtext: var(--subtext-light);
-  --project-bg: var(--project-bg-light);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 1rem;
-  transition: background 0.3s, color 0.3s;
-}
-
-.container {
-  background: var(--container);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  width: 100%;
-  max-width: 700px;
-  text-align: center;
-  transition: background 0.3s;
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 1.75rem;
-  margin-bottom: 0.25rem;
-}
-
-p.subtitle {
-  font-size: 1rem;
-  color: var(--subtext);
-  margin-bottom: 1.5rem;
-}
-
-.links,
-.projects {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 1.5rem;
-}
-
-.links li,
-.projects li {
-  margin-bottom: 1rem;
-}
-
-.links a {
-  display: block;
-  text-decoration: none;
-  background: var(--primary);
-  color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.links a i {
-  margin-right: 8px;
-}
-
-.links a:hover {
-  background: var(--primary-dark);
-}
-
-.socials {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.projects-section {
-  text-align: left;
-  margin-top: 2rem;
-}
-
-.projects-section h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: var(--primary);
-  text-align: center;
-}
-
-.project {
-  background: var(--project-bg);
-  border: 2px solid var(--primary);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1.2rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  transition: background 0.3s;
-}
-
-.project-icon {
-  font-size: 2rem;
-  color: var(--primary);
-  flex-shrink: 0;
-}
-
-.project-content h3 {
-  margin-bottom: 0.25rem;
-  font-size: 1.1rem;
-  color: var(--primary);
-}
-
-.project-content p {
-  font-size: 0.9rem;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-}
-
-.project-content a {
-  display: inline-block;
-  background: var(--primary);
-  color: #fff;
-  padding: 0.4rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-
-.project-content a:hover {
-  background: var(--primary-dark);
-}
-
-.toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-.toggle input {
-  display: none;
-}
-
-.toggle label {
-  cursor: pointer;
-  background: var(--primary);
-  color: #fff;
-  padding: 0.4rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-}
-
-#new-comment {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--subtext);
-  border-radius: 6px;
-}
-
-#post-comment-btn {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-#load-more-btn {
-  background: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  margin-top: 1rem;
-  cursor: pointer;
-}
-
-.hidden {
-  display: none;
-}
-
-@media (max-width: 480px) {
-  .project {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .project-icon {
-    font-size: 1.8rem;
-  }
-}
-
-  </style>
-</head><body>
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio with Comments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script defer type="module" src="comments.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
   <div class="toggle">
-    <input type="checkbox" id="theme-toggle">
     <label for="theme-toggle">Toggle Theme</label>
-  </div>  <div class="container">
-    <img src="avatar.jpg" alt="Your Avatar" class="avatar" />
-    <h1>Your Name</h1>
-    <p class="subtitle">Web Developer | Designer | Creator</p><ul class="links">
-  <li><a href="#"><i class="fas fa-link"></i>Portfolio</a></li>
-  <li><a href="#"><i class="fab fa-github"></i>GitHub</a></li>
-  <li><a href="#"><i class="fab fa-twitter"></i>Twitter</a></li>
-</ul>
+    <input type="checkbox" id="theme-toggle" onchange="document.documentElement.setAttribute('data-theme', this.checked ? 'dark' : 'light')" />
+  </div>
 
-<ul class="socials">
-  <li><a href="#"><i class="fab fa-facebook"></i></a></li>
-  <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-  <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
-</ul>
+  <div class="container">
+    <!-- Avatar & Info -->
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/99132890?v=4" alt="Avatar" />
+    <h1>Ishwar Kumar</h1>
+    <p class="subtitle">Full Stack Developer</p>
 
-<div class="projects-section">
-  <h2>My Projects</h2>
+    <!-- Links -->
+    <ul class="links auth-show">
+      <li><button id="login-main-btn">Login</button></li>
+      <li><button id="register-main-btn">Register</button></li>
+    </ul>
+    <ul class="links auth-hide hidden">
+      <li><button id="logout-btn">Logout</button></li>
+      <li><span id="user-info">Not signed in</span></li>
+    </ul>
 
-  <div class="project">
-    <div class="project-icon"><i class="fas fa-robot"></i></div>
-    <div class="project-content">
-      <h3>Wroxen</h3>
-      <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, powered by Pyrogram.</p>
-      <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
+    <!-- Projects Section -->
+    <section class="projects-section">
+      <h2>My Projects</h2>
+      <div class="project">
+        <span class="project-icon">💻</span>
+        <div class="project-content">
+          <h3>Portfolio Website</h3>
+          <p>Responsive site built with HTML, CSS & Firebase.</p>
+          <a href="#">View</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comments Section -->
+    <section class="projects-section">
+      <h2>Comments</h2>
+      <textarea id="new-comment" placeholder="Write a comment..." rows="3" class="w-full border rounded p-2 mb-2"></textarea>
+      <button id="post-comment-btn" class="bg-blue-500 text-white py-1 px-4 rounded mb-4">Post</button>
+      <div id="comments" class="space-y-4"></div>
+      <button id="load-more-btn" class="bg-gray-300 px-4 py-2 rounded mt-4 hidden">Load More</button>
+    </section>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" />
+      <input type="password" id="login-pass" placeholder="Password" />
+      <button id="login-email-btn">Login</button>
+      <button id="login-google-btn">Login with Google</button>
+      <button onclick="closeModal('login-modal')">Close</button>
     </div>
   </div>
 
-  <div class="project">
-    <div class="project-icon"><i class="fas fa-paper-plane"></i></div>
-    <div class="project-content">
-      <h3>CNL-Auto-Post-Bot</h3>
-      <p>Lightweight Telegram automation tool for channel owners.</p>
-      <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
+  <!-- Register Modal -->
+  <div id="register-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Register</h2>
+      <input type="email" id="reg-email" placeholder="Email" />
+      <input type="password" id="reg-pass" placeholder="Password" />
+      <button id="register-email-btn">Register</button>
+      <button id="register-google-btn">Google</button>
+      <button id="register-guest-btn">Continue as Guest</button>
+      <button onclick="closeModal('register-modal')">Close</button>
     </div>
   </div>
-</div>
 
-<!-- Comment Section -->
-<div class="projects-section">
-  <h2>Comments</h2>
-  <div id="auth">
-    <p id="user-info">Checking auth…</p>
-    <button id="login-main-btn">Login</button>
-    <button id="register-main-btn">Register</button>
-    <button id="logout-btn" class="hidden">Logout</button>
-  </div>
-
-  <div>
-    <textarea id="new-comment" rows="3" placeholder="Add a public comment..."></textarea>
-    <button id="post-comment-btn">Post Comment</button>
-  </div>
-
-  <div id="comments"></div>
-  <button id="load-more-btn" class="hidden">Load More Comments</button>
-</div>
-
-  </div>  <script>
-    const toggle = document.getElementById('theme-toggle');
-    toggle.addEventListener('change', () => {
-      document.documentElement.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
-    });
-  </script></body></html>
+  <style>
+    .hidden { display: none; }
+    .modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-content {
+      background: var(--container);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input[type="email"],
+    input[type="password"] {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</body>
+</html>
