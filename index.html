@@ -16,9 +16,9 @@
 </head>
 <body class="bg-gray-100 text-gray-900 font-[Inter,sans-serif]">
 
-  <!-- 👤 Profile + Projects Section -->
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      
       <!-- Avatar & Info -->
       <div class="text-center p-8">
         <img src="avatar.jpg" alt="Your Name" class="w-32 h-32 rounded-full mx-auto border-4 border-indigo-500" />
@@ -26,42 +26,60 @@
         <p class="text-gray-600">Web Developer & Designer</p>
       </div>
 
-      <!-- Social Links -->
+      <!-- Social Media Buttons -->
       <div class="flex flex-wrap justify-center gap-4 px-6 pb-6">
-        <a href="#" class="text-blue-600 hover:underline"><i class="fab fa-github mr-2"></i>GitHub</a>
-        <a href="#" class="text-blue-600 hover:underline"><i class="fab fa-twitter mr-2"></i>Twitter</a>
-        <a href="#" class="text-blue-600 hover:underline"><i class="fab fa-telegram mr-2"></i>Telegram</a>
-        <a href="#" class="text-blue-600 hover:underline"><i class="fab fa-youtube mr-2"></i>YouTube</a>
-        <a href="#" class="text-blue-600 hover:underline"><i class="fab fa-facebook mr-2"></i>Facebook</a>
-        <a href="mailto:youremail@example.com" class="text-blue-600 hover:underline"><i class="fas fa-envelope mr-2"></i>Email</a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-blue-600 rounded shadow">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-blue-500 rounded shadow">
+          <i class="fab fa-twitter"></i> Twitter
+        </a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-blue-400 rounded shadow">
+          <i class="fab fa-telegram"></i> Telegram
+        </a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-red-600 rounded shadow">
+          <i class="fab fa-youtube"></i> YouTube
+        </a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-blue-700 rounded shadow">
+          <i class="fab fa-facebook"></i> Facebook
+        </a>
+        <a href="mailto:youremail@example.com" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded shadow">
+          <i class="fas fa-envelope"></i> Email
+        </a>
       </div>
 
-      <!-- Projects -->
+      <!-- My Projects -->
       <div class="px-6 pb-8">
         <h2 class="text-xl font-bold mb-6 border-b pb-2">My Projects</h2>
 
         <div class="space-y-6">
-          <div class="flex gap-4 items-start">
-            <div class="text-3xl text-indigo-500"><i class="fas fa-robot"></i></div>
-            <div>
-              <h3 class="text-lg font-semibold">Wroxen</h3>
-              <p class="text-gray-600">Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
-              <a href="https://github.com/0AIB/wroxen" target="_blank" class="text-blue-600 hover:underline">View on GitHub</a>
+          <!-- Project 1 -->
+          <div class="border rounded-lg shadow p-4 hover:shadow-md transition">
+            <div class="flex gap-4 items-start">
+              <div class="text-3xl text-indigo-500"><i class="fas fa-robot"></i></div>
+              <div>
+                <h3 class="text-lg font-semibold">Wroxen</h3>
+                <p class="text-gray-600">Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
+                <a href="https://github.com/0AIB/wroxen" target="_blank" class="text-blue-600 hover:underline">View on GitHub</a>
+              </div>
             </div>
           </div>
 
-          <div class="flex gap-4 items-start">
-            <div class="text-3xl text-indigo-500"><i class="fas fa-paper-plane"></i></div>
-            <div>
-              <h3 class="text-lg font-semibold">CNL-Auto-Post-Bot</h3>
-              <p class="text-gray-600">CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
-              <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank" class="text-blue-600 hover:underline">View on GitHub</a>
+          <!-- Project 2 -->
+          <div class="border rounded-lg shadow p-4 hover:shadow-md transition">
+            <div class="flex gap-4 items-start">
+              <div class="text-3xl text-indigo-500"><i class="fas fa-paper-plane"></i></div>
+              <div>
+                <h3 class="text-lg font-semibold">CNL-Auto-Post-Bot</h3>
+                <p class="text-gray-600">CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
+                <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank" class="text-blue-600 hover:underline">View on GitHub</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ✅ Comment Section -->
+      <!-- Comments Section -->
       <div class="bg-gray-50 px-6 py-8 border-t">
         <h2 class="text-xl font-bold mb-4">Comments</h2>
 
@@ -90,7 +108,7 @@
     </div>
   </div>
 
-  <!-- 🔒 Login Modal -->
+  <!-- Login Modal -->
   <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
       <h2 class="text-xl font-semibold">Login</h2>
@@ -102,7 +120,7 @@
     </div>
   </div>
 
-  <!-- 📝 Register Modal -->
+  <!-- Register Modal -->
   <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
       <h2 class="text-xl font-semibold">Register</h2>
@@ -115,7 +133,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Script -->
   <script type="module" src="comments.js"></script>
   <script>
     function closeModal(id) {
