@@ -309,16 +309,24 @@ function renderComment(id,data) {
 // Toggle Reaction (mutually exclusive)
 async function toggleReaction(id, addF, removeF) {
   if (!currentUser) return alert("Login first");
-  const ref = doc(db,"comments",id);
-  const snap= await getDoc(ref);
-  const data= snap.data();
+  const ref = doc(db, "comments", id);
+  const snap = await getDoc(ref);
+  const data = snap.data();
+
+  // Remove from opposite
   if (data[removeF]?.includes(currentUser.uid)) {
-    await updateDoc(ref,{ [removeF]: arrayRemove(currentUser.uid) });
+    await updateDoc(ref, {
+      [removeF]: arrayRemove(currentUser.uid)
+    });
   }
-  const has = data[addF]?.includes(currentUser.uid);
-  const op  = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
-  await updateDoc(ref,{ [addF]: op });
-  loadComments(true);
+
+  // Toggle current
+  const alreadyReacted = data[addF]?.includes(currentUser.uid);
+  await updateDoc(ref, {
+    [addF]: alreadyReacted ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
+  });
+
+  // No need to manually reload — onSnapshot will re-render it
 }
 
 // Load nested replies (1 level)
