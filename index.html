@@ -1,136 +1,310 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
+<!DOCTYPE html><html lang="en" data-theme="light"><head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name | Portfolio</title>
-
-  <!-- Google Fonts -->
+  <title>Your Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg-light: #f0f2f5;
+      --container-light: #fff;
+      --text-light: #333;
+      --subtext-light: #666;
+      --project-bg-light: #e3e9f5;--bg-dark: #1e1e1e;
+  --container-dark: #2c2c2c;
+  --text-dark: #f9f9f9;
+  --subtext-dark: #bbb;
+  --project-bg-dark: #333945;
 
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+  --primary: #0073e6;
+  --primary-dark: #005bb5;
+}
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-900 font-[Inter,sans-serif]">
+[data-theme="dark"] {
+  --bg: var(--bg-dark);
+  --container: var(--container-dark);
+  --text: var(--text-dark);
+  --subtext: var(--subtext-dark);
+  --project-bg: var(--project-bg-dark);
+}
 
-  <!-- 🌙 Dark Mode Toggle -->
-  <div class="p-4 text-right">
-    <label for="darkToggle" class="cursor-pointer">
-      <input type="checkbox" id="darkToggle" class="mr-2" />
-      🌙 Dark Mode
-    </label>
+[data-theme="light"] {
+  --bg: var(--bg-light);
+  --container: var(--container-light);
+  --text: var(--text-light);
+  --subtext: var(--subtext-light);
+  --project-bg: var(--project-bg-light);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.container {
+  background: var(--container);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+p.subtitle {
+  font-size: 1rem;
+  color: var(--subtext);
+  margin-bottom: 1.5rem;
+}
+
+.links,
+.projects {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.links li,
+.projects li {
+  margin-bottom: 1rem;
+}
+
+.links a {
+  display: block;
+  text-decoration: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.links a i {
+  margin-right: 8px;
+}
+
+.links a:hover {
+  background: var(--primary-dark);
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.projects-section {
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.projects-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  text-align: center;
+}
+
+.project {
+  background: var(--project-bg);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: background 0.3s;
+}
+
+.project-icon {
+  font-size: 2rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.project-content h3 {
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.project-content p {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.project-content a {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.project-content a:hover {
+  background: var(--primary-dark);
+}
+
+.toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggle label {
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+#new-comment {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--subtext);
+  border-radius: 6px;
+}
+
+#post-comment-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+#load-more-btn {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .project {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .project-icon {
+    font-size: 1.8rem;
+  }
+}
+
+  </style>
+</head><body>
+  <div class="toggle">
+    <input type="checkbox" id="theme-toggle">
+    <label for="theme-toggle">Toggle Theme</label>
+  </div>  <div class="container">
+    <img src="avatar.jpg" alt="Your Avatar" class="avatar" />
+    <h1>Your Name</h1>
+    <p class="subtitle">Web Developer | Designer | Creator</p><ul class="links">
+  <li><a href="#"><i class="fas fa-link"></i>Portfolio</a></li>
+  <li><a href="#"><i class="fab fa-github"></i>GitHub</a></li>
+  <li><a href="#"><i class="fab fa-twitter"></i>Twitter</a></li>
+</ul>
+
+<ul class="socials">
+  <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+  <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+  <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+</ul>
+
+<div class="projects-section">
+  <h2>My Projects</h2>
+
+  <div class="project">
+    <div class="project-icon"><i class="fas fa-robot"></i></div>
+    <div class="project-content">
+      <h3>Wroxen</h3>
+      <p>Telegram bot with Auto Filter, Auto Caption, Auto Forward, powered by Pyrogram.</p>
+      <a href="https://github.com/0AIB/wroxen" target="_blank">View on GitHub</a>
+    </div>
   </div>
 
-  <!-- 👤 Profile + Projects Section (Single Column Layout) -->
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white rounded shadow">
-    <!-- Avatar & Info -->
-    <div class="text-center">
-      <img src="avatar.jpg" alt="Your Name" class="mx-auto w-32 h-32 rounded-full" />
-      <h1 class="text-3xl font-semibold mt-4">Your Name</h1>
-      <p class="text-gray-600">Web Developer & Designer</p>
-    </div>
-
-    <!-- Social Links -->
-    <ul class="mt-6 space-y-2 text-center">
-      <li><a href="#" class="text-blue-600"><i class="fab fa-github mr-2"></i>GitHub</a></li>
-      <li><a href="#" class="text-blue-600"><i class="fab fa-twitter mr-2"></i>Twitter</a></li>
-      <li><a href="#" class="text-blue-600"><i class="fab fa-telegram mr-2"></i>Telegram</a></li>
-      <li><a href="#" class="text-blue-600"><i class="fab fa-youtube mr-2"></i>YouTube</a></li>
-      <li><a href="#" class="text-blue-600"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
-      <li><a href="mailto:youremail@example.com" class="text-blue-600"><i class="fas fa-envelope mr-2"></i>Email</a></li>
-    </ul>
-
-    <!-- Projects -->
-    <div class="mt-10">
-      <h2 class="text-xl font-bold mb-4">My Projects</h2>
-
-      <div class="flex gap-4 mb-6 items-start">
-        <div class="text-3xl text-indigo-500"><i class="fas fa-robot"></i></div>
-        <div>
-          <h3 class="text-lg font-semibold">Wroxen</h3>
-          <p class="text-gray-600">Telegram bot with Auto Filter, Auto Caption, Auto Forward, and Existing Message Forwarding powered by Pyrogram.</p>
-          <a href="https://github.com/0AIB/wroxen" target="_blank" class="text-blue-600">View on GitHub</a>
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <div class="text-3xl text-indigo-500"><i class="fas fa-paper-plane"></i></div>
-        <div>
-          <h3 class="text-lg font-semibold">CNL-Auto-Post-Bot</h3>
-          <p class="text-gray-600">CNL-Auto-Post-Bot is a lightweight Telegram automation tool that helps channel owners.</p>
-          <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank" class="text-blue-600">View on GitHub</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ✅ Comment Section RIGHT AFTER Projects -->
-    <div class="mt-12">
-      <h2 class="text-xl font-bold mb-4">Comments</h2>
-
-      <!-- Auth UI -->
-      <div id="auth" class="mb-6">
-        <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
-        <div class="flex gap-2 flex-wrap">
-          <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
-          <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
-          <button id="logout-btn" class="auth-hide hidden px-4 py-2 bg-red-600 text-white rounded">Logout</button>
-        </div>
-      </div>
-
-      <!-- New Comment -->
-      <div class="mb-6">
-        <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="w-full p-3 border rounded"></textarea>
-        <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">Post Comment</button>
-      </div>
-
-      <!-- Comments Display -->
-      <div id="comments" class="space-y-4"></div>
-      <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
-        Load More Comments
-      </button>
+  <div class="project">
+    <div class="project-icon"><i class="fas fa-paper-plane"></i></div>
+    <div class="project-content">
+      <h3>CNL-Auto-Post-Bot</h3>
+      <p>Lightweight Telegram automation tool for channel owners.</p>
+      <a href="https://github.com/0AIB/CNL-Auto-Post-Bot" target="_blank">View on GitHub</a>
     </div>
   </div>
+</div>
 
-  <!-- 🔒 Login Modal -->
-  <div id="login-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
-      <h2 class="text-xl font-semibold">Login</h2>
-      <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
-      <input id="login-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
-      <button id="login-email-btn" class="w-full px-4 py-2 bg-green-600 text-white rounded">Login with Email</button>
-      <button id="login-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Login with Google</button>
-      <button onclick="closeModal('login-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
-    </div>
+<!-- Comment Section -->
+<div class="projects-section">
+  <h2>Comments</h2>
+  <div id="auth">
+    <p id="user-info">Checking auth…</p>
+    <button id="login-main-btn">Login</button>
+    <button id="register-main-btn">Register</button>
+    <button id="logout-btn" class="hidden">Logout</button>
   </div>
 
-  <!-- 📝 Register Modal -->
-  <div id="register-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
-      <h2 class="text-xl font-semibold">Register</h2>
-      <input id="reg-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
-      <input id="reg-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
-      <button id="register-email-btn" class="w-full px-4 py-2 bg-yellow-600 text-white rounded">Register with Email</button>
-      <button id="register-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Register with Google</button>
-      <button id="register-guest-btn" class="w-full px-4 py-2 bg-gray-600 text-white rounded">Continue as Guest</button>
-      <button onclick="closeModal('register-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
-    </div>
+  <div>
+    <textarea id="new-comment" rows="3" placeholder="Add a public comment..."></textarea>
+    <button id="post-comment-btn">Post Comment</button>
   </div>
 
-  <!-- 🧠 Scripts -->
-  <script type="module" src="comments.js"></script>
-  <script>
-    const toggle = document.getElementById('darkToggle');
-    const html = document.documentElement;
+  <div id="comments"></div>
+  <button id="load-more-btn" class="hidden">Load More Comments</button>
+</div>
+
+  </div>  <script>
+    const toggle = document.getElementById('theme-toggle');
     toggle.addEventListener('change', () => {
-      html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
     });
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-  </script>
-</body>
-</html>
+  </script></body></html>
