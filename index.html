@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Auth-Guarded YouTube-Style Comments</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Comments System (Fixed)</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
   <div class="max-w-3xl mx-auto p-6">
-    <!-- Auth Controls -->
+    <!-- Auth UI -->
     <div id="auth" class="mb-6">
-      <p id="user-info" class="mb-2 text-sm text-gray-800">Checking auth…</p>
+      <p id="user-info" class="mb-2 text-sm text-gray-700">Checking auth…</p>
       <div class="flex gap-2 flex-wrap">
         <button id="login-main-btn" class="auth-show px-4 py-2 bg-green-600 text-white rounded">Login</button>
         <button id="register-main-btn" class="auth-show px-4 py-2 bg-yellow-600 text-white rounded">Register</button>
@@ -19,45 +19,38 @@
     </div>
     <!-- New Comment -->
     <div class="mb-6">
-      <textarea id="new-comment" rows="3" placeholder="Add a public comment..."
-                class="w-full p-3 border rounded"></textarea>
-      <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">
-        Post Comment
-      </button>
+      <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="w-full p-3 border rounded"></textarea>
+      <button id="post-comment-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded">Post Comment</button>
     </div>
-    <!-- Comments List -->
+    <!-- Comments -->
     <div id="comments" class="space-y-4"></div>
     <button id="load-more-btn" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hidden">
       Load More Comments
     </button>
   </div>
   <!-- Login Modal -->
-  <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-80">
-      <h2 class="text-lg font-semibold mb-4">Login</h2>
-      <input id="login-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
-      <input id="login-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
-      <button id="login-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-      <button id="login-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
-      <button onclick="closeModal('login-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+  <div id="login-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
+      <h2 class="text-xl font-semibold">Login</h2>
+      <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
+      <input id="login-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+      <button id="login-email-btn" class="w-full px-4 py-2 bg-green-600 text-white rounded">Login with Email</button>
+      <button id="login-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Login with Google</button>
+      <button onclick="closeModal('login-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
     </div>
   </div>
   <!-- Register Modal -->
-  <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-80">
-      <h2 class="text-lg font-semibold mb-4">Register</h2>
-      <input id="reg-email" type="email" placeholder="Email" class="mb-2 w-full border p-2 rounded" />
-      <input id="reg-pass" type="password" placeholder="Password" class="mb-4 w-full border p-2 rounded" />
-      <button id="register-email-btn" class="w-full mb-2 px-4 py-2 bg-green-600 text-white rounded">Email/Password</button>
-      <button id="register-google-btn" class="w-full mb-2 px-4 py-2 bg-blue-600 text-white rounded">Google</button>
-      <button id="register-guest-btn" class="w-full mb-2 px-4 py-2 bg-gray-600 text-white rounded">Guest</button>
-      <button onclick="closeModal('register-modal')" class="w-full px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+  <div id="register-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded max-w-sm w-full space-y-4">
+      <h2 class="text-xl font-semibold">Register</h2>
+      <input id="reg-email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
+      <input id="reg-pass" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+      <button id="register-email-btn" class="w-full px-4 py-2 bg-yellow-600 text-white rounded">Register with Email</button>
+      <button id="register-google-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded">Register with Google</button>
+      <button id="register-guest-btn" class="w-full px-4 py-2 bg-gray-600 text-white rounded">Continue as Guest</button>
+      <button onclick="closeModal('register-modal')" class="mt-2 text-sm text-gray-600">Cancel</button>
     </div>
   </div>
-  <script>
-    // Modal Function
-    window.closeModal = id => document.getElementById(id).classList.add("hidden");
-  </script>
   <script type="module" src="comments.js"></script>
 </body>
 </html>
