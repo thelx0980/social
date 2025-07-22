@@ -13,9 +13,6 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Optional custom CSS -->
-  <link rel="stylesheet" href="social.css" />
 </head>
 <body class="bg-gray-100 text-gray-900 font-[Inter,sans-serif]">
 
@@ -27,23 +24,26 @@
     </label>
   </div>
 
-  <!-- 👤 Profile Section -->
-  <div class="container max-w-3xl mx-auto p-6 bg-white rounded shadow">
-    <img src="avatar.jpg" alt="Your Name" class="mx-auto w-32 h-32 rounded-full" />
-    <h1 class="text-center text-3xl font-semibold mt-4">Your Name</h1>
-    <p class="text-center text-gray-600">Web Developer & Designer</p>
+  <!-- 👤 Profile + Projects Section (Single Column Layout) -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white rounded shadow">
+    <!-- Avatar & Info -->
+    <div class="text-center">
+      <img src="avatar.jpg" alt="Your Name" class="mx-auto w-32 h-32 rounded-full" />
+      <h1 class="text-3xl font-semibold mt-4">Your Name</h1>
+      <p class="text-gray-600">Web Developer & Designer</p>
+    </div>
 
-    <!-- 🔗 Social Links -->
+    <!-- Social Links -->
     <ul class="mt-6 space-y-2 text-center">
-      <li><a href="https://github.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-github mr-2"></i>GitHub</a></li>
-      <li><a href="https://twitter.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-twitter mr-2"></i>Twitter</a></li>
-      <li><a href="https://t.me/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-telegram mr-2"></i>Telegram</a></li>
-      <li><a href="https://youtube.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-youtube mr-2"></i>YouTube</a></li>
-      <li><a href="https://facebook.com/yourusername" target="_blank" class="text-blue-600"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-github mr-2"></i>GitHub</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-twitter mr-2"></i>Twitter</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-telegram mr-2"></i>Telegram</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-youtube mr-2"></i>YouTube</a></li>
+      <li><a href="#" class="text-blue-600"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
       <li><a href="mailto:youremail@example.com" class="text-blue-600"><i class="fas fa-envelope mr-2"></i>Email</a></li>
     </ul>
 
-    <!-- 📂 Projects Section -->
+    <!-- Projects -->
     <div class="mt-10">
       <h2 class="text-xl font-bold mb-4">My Projects</h2>
 
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <!-- 💬 Comments Section -->
+    <!-- ✅ Comment Section RIGHT AFTER Projects -->
     <div class="mt-12">
       <h2 class="text-xl font-bold mb-4">Comments</h2>
 
@@ -119,18 +119,15 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- 🧠 Scripts -->
   <script type="module" src="comments.js"></script>
-
   <script>
-    // Dark mode toggle
     const toggle = document.getElementById('darkToggle');
     const html = document.documentElement;
     toggle.addEventListener('change', () => {
       html.setAttribute('data-theme', toggle.checked ? 'dark' : 'light');
     });
 
-    // Close modal utility
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
     }
