@@ -158,102 +158,34 @@ function renderReply({ id, name, text, created, photoURL, uid }, container) {
 
 
 // Load & Render Comments
-async function loadComments(reset = false) {
-  if (reset) { commentsDiv.innerHTML = ""; lastVisible = null; }
-  let q = query(collection(db, "comments"), orderBy("created", "desc"), limit(PAGE_SIZE));
-  if (lastVisible) q = query(q, startAfter(lastVisible));
-  const snap = await getDocs(q);
-  loadMoreBtn.classList.toggle("hidden", snap.size < PAGE_SIZE);
-  lastVisible = snap.docs[snap.docs.length - 1];
-  snap.forEach(d => renderComment(d.id, d.data()));
-}
-loadMoreBtn.onclick = () => loadComments();
-
-// Render Single Comment
 function renderComment(id, data) {
-  // Ensure required variables are defined
-  if (!currentUser || !OWNER_UID) {
-    console.warn("currentUser or OWNER_UID is not defined");
+  const isOwner = currentUser?.uid === data.uid;
+  const isAdmin = currentUser?.uid === OWNER_UID;
+  const youLiked = currentUser && data.likes.includes(currentUser.uid);
+  const youDisliked = currentUser && data.dislikes.includes(currentUser.uid);
+  const avatarURL = data.photoURL || '/default-avatar.png';
+
+  const actions = [];
+  actions.push(`<button data-action="like" class="mr-2 ${youLiked ? 'text-blue-600' : ''}">👍 ${data.likes.length}</button>`);
+  actions.push(`<button data-action="dislike" class="mr-2 ${youDisliked ? 'text-red-600' : ''}">👎 ${data.dislikes.length}</button>`);
+  actions.push(`<button data-action="reply" class="mr-2">Reply</button>`);
+  if (isOwner || isAdmin) {
+    actions.push(`<button data-action="edit" class="mr-2">Edit</button>`);
+    actions.push(`<button data-action="delete" class="text-red-500">Delete</button>`);
   }
-
-  // Validate and set defaults for data
-  const safeData = {
-    uid: data.uid || "",
-    name: data.name || "Anonymous",
-    text: data.text || "",
-    created: data.created || null,
-    edited: data.edited || false,
-    likes: Array.isArray(data.likes) ? data.likes : [],
-    dislikes: Array.isArray(data.dislikes) ? data.dislikes : [],
-  };
-
-  const isOwner = currentUser && safeData.uid && currentUser.uid === safeData.uid;
-  const isAdmin = currentUser && currentUser.uid === OWNER_UID;
-  const youLiked = currentUser && safeData.likes.includes(currentUser.uid);
-  const youDisliked = currentUser && safeData.dislikes.includes(currentUser.uid);
 
   const div = document.createElement("div");
-  div.className = "bg-white p-4 rounded shadow-sm";
-  div.dataset.id = id; // Add comment ID for event handling
-
-  // Build DOM elements safely
-  const headerDiv = document.createElement("div");
-  headerDiv.className = "flex justify-between";
-  
-  const namePara = document.createElement("p");
-  namePara.className = "font-semibold";
-  namePara.textContent = safeData.name;
-  headerDiv.appendChild(namePara);
-
-  const timePara = document.createElement("p");
-  timePara.className = "text-xs text-gray-500";
-  timePara.textContent = safeData.created && typeof timeAgo === "function" 
-    ? `${timeAgo(safeData.created)}${safeData.edited ? " • edited" : ""}`
-    : "Unknown time";
-  headerDiv.appendChild(timePara);
-
-  const textPara = document.createElement("p");
-  textPara.className = "my-2";
-  textPara.textContent = safeData.text;
-  
-  const actionsDiv = document.createElement("div");
-  actionsDiv.className = "flex items-center gap-4 text-sm";
-
-  const likeBtn = document.createElement("button");
-  likeBtn.className = `like-btn flex items-center gap-1 ${youLiked ? "text-blue-600" : ""}`;
-  likeBtn.setAttribute("aria-label", "Like comment");
-  likeBtn.innerHTML = `👍 <span>${safeData.likes.length}</span>`;
-  actionsDiv.appendChild(likeBtn);
-
-  const dislikeBtn = document.createElement("button");
-  dislikeBtn.className = `dislike-btn flex items-center gap-1 ${youDisliked ? "text-red-600" : ""}`;
-  dislikeBtn.setAttribute("aria-label", "Dislike comment");
-  dislikeBtn.innerHTML = `👎 <span>${safeData.dislikes.length}</span>`;
-  actionsDiv.appendChild(dislikeBtn);
-
-  const replyBtn = document.createElement("button");
-  replyBtn.className = "reply-btn";
-  replyBtn.textContent = "Reply";
-  actionsDiv.appendChild(replyBtn);
-
-  if (isOwner || isAdmin) {
-    const editBtn = document.createElement("button");
-    editBtn.className = "edit-btn";
-    editBtn.textContent = "Edit";
-    actionsDiv.appendChild(editBtn);
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "delete-btn text-red-500";
-    deleteBtn.textContent = "Delete";
-    actionsDiv.appendChild(deleteBtn);
-  }
-
-  div.appendChild(headerDiv);
-  div.appendChild(textPara);
-  div.appendChild(actionsDiv);
-
-  return div;
-}
+  div.className = `bg-white p-4 rounded shadow-sm ${data.uid === OWNER_UID ? 'border-2 border-yellow-400' : ''}`;
+  div.innerHTML = `
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="${avatarURL}" class="w-8 h-8 rounded-full ${data.uid === OWNER_UID ? 'ring-2 ring-yellow-400' : ''}" />
+        <p class="font-semibold ${data.uid === OWNER_UID ? 'text-yellow-600' : ''}">${data.name}${data.uid === OWNER_UID ? ' ★' : ''}</p>
+      </div>
+      <p class="text-xs text-gray-500">${data.created ? timeAgo(data.created) : ''}${data.edited ? ' • edited' : ''}</p>
+    </div>
+    <p class="my-2">${data.text}</p>
+    <div class="flex items-center text-sm text-gray-600">${actions.join('')}</div>
     <div class="ml-6 mt-2 reply-form hidden">
       <textarea rows="2" class="w-full border rounded p-2" placeholder="Write a reply..."></textarea>
       <button class="mt-1 px-3 py-1 bg-indigo-500 text-white rounded post-reply-btn">Reply</button>
@@ -261,93 +193,68 @@ function renderComment(id, data) {
     <div class="ml-6 mt-2 replies"></div>
   `;
 
-  // Like/dislike toggle (mutually exclusive)
-  div.querySelector(".like-btn").onclick = () => toggleReaction(id, "likes", "dislikes");
-  div.querySelector(".dislike-btn").onclick = () => toggleReaction(id, "dislikes", "likes");
-
-  // Delete
-  const del = div.querySelector(".delete-btn");
-  if (del) del.onclick = async () => {
-    if (confirm("Delete this comment?")) {
-      await deleteDoc(doc(db, "comments", id));
+  const handleAction = async (action, event) => {
+    if (action === 'like' || action === 'dislike') {
+      if (!currentUser) return alert("Login first");
+      const fieldAdd = action === 'like' ? 'likes' : 'dislikes';
+      const fieldRem = action === 'like' ? 'dislikes' : 'likes';
+      const ref = doc(db, "comments", id);
+      const snap = await getDoc(ref);
+      const d = snap.data();
+      if (d[fieldAdd].includes(currentUser.uid)) {
+        // Remove
+        await updateDoc(ref, { [fieldAdd]: arrayRemove(currentUser.uid) });
+      } else {
+        if (d[fieldRem].includes(currentUser.uid)) {
+          await updateDoc(ref, { [fieldRem]: arrayRemove(currentUser.uid) });
+        }
+        await updateDoc(ref, { [fieldAdd]: arrayUnion(currentUser.uid) });
+      }
       loadComments(true);
+    }
+    else if (action === 'reply') {
+      div.querySelector('.reply-form').classList.toggle('hidden');
+    }
+    else if (action === 'edit') {
+      const t = prompt("Edit comment:", data.text);
+      if (t != null) {
+        await updateDoc(doc(db, "comments", id), { text: t, edited: true });
+        loadComments(true);
+      }
+    }
+    else if (action === 'delete') {
+      if (confirm("Delete this comment?")) {
+        await deleteDoc(doc(db, "comments", id));
+        loadComments(true);
+      }
     }
   };
 
-  // Edit
-  const ed = div.querySelector(".edit-btn");
-  if (ed) ed.onclick = async () => {
-    const t = prompt("Edit your comment:", data.text);
-    if (t != null) {
-      await updateDoc(doc(db, "comments", id), { text: t, edited: true });
-      loadComments(true);
-    }
-  };
+  div.querySelectorAll("button").forEach(btn => {
+    const act = btn.getAttribute('data-action');
+    if (act) btn.onclick = e => handleAction(act, e);
+  });
 
-  // Reply
-  const repBtn = div.querySelector(".reply-btn");
-  const repForm = div.querySelector(".reply-form");
-  const postRep = div.querySelector(".post-reply-btn");
-  const repliesCont = div.querySelector(".replies");
+  const replyForm = div.querySelector('.reply-form');
+  const repliesC = div.querySelector('.replies');
 
-  repBtn.onclick = () => repForm.classList.toggle("hidden");
-  postRep.onclick = async () => {
+  div.querySelector('.post-reply-btn').onclick = async () => {
     if (!currentUser) return alert("Login first");
-    const ta = repForm.querySelector("textarea");
+    const ta = replyForm.querySelector("textarea");
     const txt = ta.value.trim();
     if (!txt) return;
     await addDoc(collection(db, "comments", id, "replies"), {
       text: txt,
       uid: currentUser.uid,
       name: currentUser.displayName || "Guest",
+      photoURL: currentUser.photoURL || null,
       created: serverTimestamp()
     });
-    ta.value = "";
-    repForm.classList.add("hidden");
-    loadReplies(id, repliesCont);
+    ta.value = '';
+    replyForm.classList.add('hidden');
+    loadReplies(id, repliesC, true);
   };
 
-  // Load nested replies
-  loadReplies(id, div.querySelector(".replies"));
-
+  loadReplies(id, repliesC, true);
   commentsDiv.appendChild(div);
 }
-
-// Toggle Reaction
-async function toggleReaction(id, addF, removeF) {
-  if (!currentUser) return alert("Login first");
-  const ref = doc(db, "comments", id);
-  const snap = await getDoc(ref);
-  const data = snap.data();
-  // Remove opposite
-  if (data[removeF]?.includes(currentUser.uid)) {
-    await updateDoc(ref, { [removeF]: arrayRemove(currentUser.uid) });
-  }
-  // Toggle
-  const has = data[addF]?.includes(currentUser.uid);
-  const op = has ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
-  await updateDoc(ref, { [addF]: op });
-  loadComments(true);
-}
-
-// Load Replies
-async function loadReplies(parentId, container) {
-  container.innerHTML = "";
-  const snap = await getDocs(query(collection(db, "comments", parentId, "replies"), orderBy("created", "asc")));
-  snap.forEach(r => {
-    const d = r.data();
-    const el = document.createElement("div");
-    el.className = "bg-gray-50 p-2 rounded mb-1";
-    el.innerHTML = `
-      <div class="flex justify-between">
-        <p class="text-sm font-semibold">${d.name}</p>
-        <p class="text-xs text-gray-500">${d.created ? timeAgo(d.created) : ""}</p>
-      </div>
-      <p class="text-sm">${d.text}</p>
-    `;
-    container.appendChild(el);
-  });
-}
-
-// Initial fetch
-loadComments();
