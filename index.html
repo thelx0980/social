@@ -1,59 +1,60 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-  <meta charset="UTF-8" />  
-  <meta name="viewport" content="width=device-width,initial-scale=1" />  
-  <title>Comments System (Fixed)</title>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Comment System</title>
   <link rel="stylesheet" href="styles.css" />
-</head>  
-<body class="body">  
-  <div class="container">  
-    <!-- Auth UI -->  
-    <div id="auth" class="mb-6">  
-      <p id="user-info" class="user-info">Checking auth…</p>  
-      <div class="button-group">  
-        <button id="login-main-btn" class="btn green auth-show">Login</button>  
-        <button id="register-main-btn" class="btn yellow auth-show">Register</button>  
-        <button id="logout-btn" class="btn red auth-hide hidden">Logout</button>  
-      </div>  
-    </div>  
+</head>
+<body class="body">
+  <div class="container">
+    <!-- Auth UI -->
+    <div id="auth" class="mb-6">
+      <p id="user-info" class="user-info">Checking auth…</p>
+      <div class="button-group">
+        <button id="login-main-btn" class="btn green auth-show">Login</button>
+        <button id="register-main-btn" class="btn yellow auth-show">Register</button>
+        <button id="logout-btn" class="btn red auth-hide hidden">Logout</button>
+      </div>
+    </div>
 
-    <!-- New Comment -->  
-    <div class="mb-6">  
-      <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="textarea"></textarea>  
-      <button id="post-comment-btn" class="btn indigo mt-2">Post Comment</button>  
-    </div>  
+    <!-- New Comment -->
+    <div class="mb-6">
+      <textarea id="new-comment" rows="3" placeholder="Add a public comment..." class="textarea" disabled></textarea>
+      <button id="post-comment-btn" class="btn indigo mt-2" disabled>Post Comment</button>
+      <p id="login-warning" class="text-warning">🔒 Please login to post a comment.</p>
+    </div>
 
-    <!-- Comments -->  
-    <div id="comments" class="comments"></div>  
-    <button id="load-more-btn" class="btn gray mt-4 hidden">Load More Comments</button>  
-  </div>  
+    <!-- Comments Section -->
+    <div id="comments" class="comments"></div>
+    <button id="load-more-btn" class="btn gray mt-4 hidden">Load More Comments</button>
+  </div>
 
-  <!-- Login Modal -->  
-  <div id="login-modal" class="modal hidden">  
-    <div class="modal-box">  
-      <h2 class="modal-title">Login</h2>  
-      <input id="login-email" type="email" placeholder="Email" class="input" />  
-      <input id="login-pass" type="password" placeholder="Password" class="input" />  
-      <button id="login-email-btn" class="btn green full">Login with Email</button>  
-      <button id="login-google-btn" class="btn red full">Login with Google</button>  
-      <button onclick="closeModal('login-modal')" class="cancel-link">Cancel</button>  
-    </div>  
-  </div>  
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2 class="modal-title">Login</h2>
+      <input id="login-email" type="email" placeholder="Email" class="input" />
+      <input id="login-pass" type="password" placeholder="Password" class="input" />
+      <button id="login-email-btn" class="btn green full">Login with Email</button>
+      <button id="login-google-btn" class="btn red full">Login with Google</button>
+      <button onclick="closeModal('login-modal')" class="cancel-link">Cancel</button>
+    </div>
+  </div>
 
-  <!-- Register Modal -->  
-  <div id="register-modal" class="modal hidden">  
-    <div class="modal-box">  
-      <h2 class="modal-title">Register</h2>  
-      <input id="reg-email" type="email" placeholder="Email" class="input" />  
-      <input id="reg-pass" type="password" placeholder="Password" class="input" />  
-      <button id="register-email-btn" class="btn yellow full">Register with Email</button>  
-      <button id="register-google-btn" class="btn red full">Register with Google</button>  
-      <button id="register-guest-btn" class="btn gray full">Continue as Guest</button>  
-      <button onclick="closeModal('register-modal')" class="cancel-link">Cancel</button>  
-    </div>  
-  </div>  
+  <!-- Register Modal -->
+  <div id="register-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2 class="modal-title">Register</h2>
+      <input id="reg-email" type="email" placeholder="Email" class="input" />
+      <input id="reg-pass" type="password" placeholder="Password" class="input" />
+      <button id="register-email-btn" class="btn yellow full">Register with Email</button>
+      <button id="register-google-btn" class="btn red full">Register with Google</button>
+      <button id="register-guest-btn" class="btn gray full">Continue as Guest</button>
+      <button onclick="closeModal('register-modal')" class="cancel-link">Cancel</button>
+    </div>
+  </div>
 
-  <script type="module" src="comments.js"></script>  
-</body>  
+  <script type="module" src="comments.js"></script>
+</body>
 </html>
